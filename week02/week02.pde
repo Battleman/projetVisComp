@@ -45,8 +45,9 @@ My2DPoint projectPoint(My3DPoint eye, My3DPoint p) {
                    {0, 1, 0, 0},
                    {0, 0, 1, 0},
                    {0, 0, -1/eye.x, 0}};
-                   
-  return doubleTo2DPoint(multiplyMatrix(proj, multiplyMatrix(trans, pFloat)));
+         
+  My2DPoint point = doubleTo2DPoint(multiplyMatrix(proj, multiplyMatrix(trans, pFloat)));
+  return new My2DPoint(point.x * (eye.z - p.z)/eye.z,point.y * (eye.z - p.z)/eye.z); 
   
 }
 
@@ -67,6 +68,8 @@ class My2DBox {
     line(s[4].x, s[4].y, s[5].x, s[5].y);
     line(s[5].x, s[5].y, s[6].x, s[6].y);
     line(s[2].x, s[2].y, s[6].x, s[6].y);
+    line(s[7].x, s[7].y, s[6].x, s[6].y);
+    line(s[5].x, s[5].y, s[1].x, s[1].y);
   }
 }
 
