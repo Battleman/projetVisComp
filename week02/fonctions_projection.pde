@@ -6,20 +6,18 @@ private float[][] pointToDouble(My3DPoint p) {
 private My3DPoint doubleTo3DPoint(float[][] m) {
   if (m.length == 4 && m[0].length == 1) {
     return new My3DPoint(m[0][0], m[1][0], m[2][0]);
-  }
-  else throw new IllegalArgumentException();
+  } else throw new IllegalArgumentException();
 }
 
 private My2DPoint doubleTo2DPoint(float[][] m) {
   if (m.length == 4 && m[0].length == 1) {
     return new My2DPoint(m[0][0], m[1][0]);
-  }
-  else throw new IllegalArgumentException();
+  } else throw new IllegalArgumentException();
 }
-  
-private float[][] matrixProduct(float[][] m1, float[][] m2) {
+
+private float[][] produitMatrices(float[][] m1, float[][] m2) {
   float[][] m = new float[m1.length][m2[0].length];
-  
+
   if (m1[0].length == m2.length) {
     for (int i = 0; i < m1.length; i++) {
       for (int j = 0; j < m2[0].length; j++) {
@@ -30,6 +28,16 @@ private float[][] matrixProduct(float[][] m1, float[][] m2) {
       }
     }
   }
-  
+
   return m;
 }  
+
+float[] matrixProduct(float[][] a, float[] b) {
+  float[] m = new float[a.length];
+  for(int i = 0; i < a.length; i++) {
+    for(int j = 0; j < b.length; j++) {
+      m[i] += a[i][j]*b[j];
+    }
+  }
+  return m;
+}

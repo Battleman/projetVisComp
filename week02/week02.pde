@@ -46,7 +46,7 @@ My2DPoint projectPoint(My3DPoint eye, My3DPoint p) {
                    {0, 0, 1, 0},
                    {0, 0, -1/eye.x, 0}};
          
-  My2DPoint point = doubleTo2DPoint(matrixProduct(proj, matrixProduct(trans, pFloat)));
+  My2DPoint point = doubleTo2DPoint(produitMatrices(proj, produitMatrices(trans, pFloat)));
   return new My2DPoint(point.x * (eye.z - p.z)/eye.z,point.y * (eye.z - p.z)/eye.z); 
   
 }
@@ -119,11 +119,12 @@ float[][] translationMatrix(float x, float y, float z) {
 }
 
 My3DBox transformBox(My3DBox box, float[][] transformMatrix) {
-  
-  return null;
+  //float[][] result = {{matrixProduct(box.
+  //My3DBox boite = new My3DBox(euclidian3DPoint(result[1]), euclidian)
+  return new My3DBox();
 }
 
 My3DPoint euclidian3DPoint (float[] a) {
-My3DPoint result = new My3DPoint(a[0]/a[3], a[1]/a[3], a[2]/a[3]);
+  My3DPoint result = new My3DPoint(a[0]/a[3], a[1]/a[3], a[2]/a[3]);
 return result;
 }
