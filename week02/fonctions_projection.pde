@@ -17,7 +17,7 @@ private My2DPoint doubleTo2DPoint(float[][] m) {
   else throw new IllegalArgumentException();
 }
   
-private float[][] multiplyMatrix(float[][] m1, float[][] m2) {
+private float[][] matrixProduct(float[][] m1, float[][] m2) {
   float[][] m = new float[m1.length][m2[0].length];
   
   if (m1[0].length == m2.length) {

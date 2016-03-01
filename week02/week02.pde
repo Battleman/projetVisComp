@@ -46,7 +46,7 @@ My2DPoint projectPoint(My3DPoint eye, My3DPoint p) {
                    {0, 0, 1, 0},
                    {0, 0, -1/eye.x, 0}};
          
-  My2DPoint point = doubleTo2DPoint(multiplyMatrix(proj, multiplyMatrix(trans, pFloat)));
+  My2DPoint point = doubleTo2DPoint(matrixProduct(proj, matrixProduct(trans, pFloat)));
   return new My2DPoint(point.x * (eye.z - p.z)/eye.z,point.y * (eye.z - p.z)/eye.z); 
   
 }
@@ -101,4 +101,29 @@ My2DBox projectBox (My3DPoint eye, My3DBox box) {
   }
   
   return new My2DBox(pointsCollec);
+}
+
+float[] homogeneous3DPoint (My3DPoint p) {
+  float[] result = {p.x, p.y, p.z , 1};
+  return result;
+}
+
+
+float[][] scaleMatrix(float x, float y, float z) {
+  float[][] result = {{x, 0, 0, 0}, {0, y, 0, 0}, {0, 0, z, 0}, {0, 0, 0, 1}};
+  return result;
+}
+float[][] translationMatrix(float x, float y, float z) {
+   float[][] result = {{1, 0, 0, x}, {0, 1, 0, y}, {0, 0, 1, z}, {0, 0, 0, 1}};
+    return result;
+}
+
+My3DBox transformBox(My3DBox box, float[][] transformMatrix) {
+  
+  return null;
+}
+
+My3DPoint euclidian3DPoint (float[] a) {
+My3DPoint result = new My3DPoint(a[0]/a[3], a[1]/a[3], a[2]/a[3]);
+return result;
 }
