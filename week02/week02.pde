@@ -1,10 +1,14 @@
 void settings() {
   size (400, 400, P2D);
 }
-void setup(){
+void setup() {
+size(400, 400, P2D);
 }
-void draw(){
-  line(200, 200, 400, 400);
+void draw() {
+My3DPoint eye = new My3DPoint(-100, -100, -5000);
+My3DPoint origin = new My3DPoint(0, 0, 0); //The first vertex of your cuboid
+My3DBox input3DBox = new My3DBox(origin, 100,150,300);
+projectBox(eye, input3DBox).render();
 }
 
 class My2DPoint {
@@ -46,38 +50,52 @@ My2DPoint projectPoint(My3DPoint eye, My3DPoint p) {
   
 }
 
-private float[][] pointToDouble(My3DPoint p) {
-  float[][] temp = {{p.x}, {p.y}, {p.z}, {1}};
-  return temp;
+class My2DBox {
+  My2DPoint[] s;
+  My2DBox(My2DPoint[] s) {
+    this.s = s;
+  }
+  void render(){
+    // Complete the code! use only line(x1, y1, x2, y2) built-in function.
+    line(s[0].x, s[0].y, s[1].x, s[1].y);
+    line(s[0].x, s[0].y, s[3].x, s[3].y);
+    line(s[0].x, s[0].y, s[4].x, s[4].y);
+    line(s[2].x, s[2].y, s[1].x, s[1].y);
+    line(s[3].x, s[3].y, s[7].x, s[7].y);
+    line(s[2].x, s[2].y, s[3].x, s[3].y);
+    line(s[4].x, s[4].y, s[7].x, s[7].y);
+    line(s[4].x, s[4].y, s[5].x, s[5].y);
+    line(s[5].x, s[5].y, s[6].x, s[6].y);
+    line(s[2].x, s[2].y, s[6].x, s[6].y);
+  }
 }
 
-private My3DPoint doubleTo3DPoint(float[][] m) {
-  if (m.length == 4 && m[0].length == 1) {
-    return new My3DPoint(m[0][0], m[1][0], m[2][0]);
-  }
-  else throw new IllegalArgumentException();
-}
-
-private My2DPoint doubleTo2DPoint(float[][] m) {
-  if (m.length == 4 && m[0].length == 1) {
-    return new My2DPoint(m[0][0], m[1][0]);
-  }
-  else throw new IllegalArgumentException();
-}
-  
-private float[][] multiplyMatrix(float[][] m1, float[][] m2) {
-  float[][] m = new float[m1.length][m2[0].length];
-  
-  if (m1[0].length == m2.length) {
-    for (int i = 0; i < m1.length; i++) {
-      for (int j = 0; j < m2[0].length; j++) {
-        m[i][j] = 0;
-        for (int k = 0; k < m1[0].length; k++) {
-          m[i][j] += m1[i][k] * m2[k][j];
-        }
-      }
+class My3DBox {
+  My3DPoint[] p;
+  My3DBox(My3DPoint origin, float dimX, float dimY, float dimZ){
+    float x = origin.x;
+    float y = origin.y;
+    float z = origin.z;
+    this.p = new My3DPoint[]{ new My3DPoint(x,y+dimY,z+dimZ),
+                              new My3DPoint(x,y,z+dimZ),
+                              new My3DPoint(x+dimX,y,z+dimZ),
+                              new My3DPoint(x+dimX,y+dimY,z+dimZ),
+                              new My3DPoint(x,y+dimY,z),
+                              origin,
+                              new My3DPoint(x+dimX,y,z),
+                              new My3DPoint(x+dimX,y+dimY,z)
+                            };
     }
+    My3DBox(My3DPoint[] p) {
+      this.p = p;
+    }
+}
+
+My2DBox projectBox (My3DPoint eye, My3DBox box) {
+  My2DPoint[] pointsCollec = new My2DPoint[box.p.length];  
+  for(int i = 0; i < box.p.length; i++) {
+     pointsCollec[i] = projectPoint(eye, box.p[i]);   
   }
   
-  return m;
-}  
+  return new My2DBox(pointsCollec);
+}
