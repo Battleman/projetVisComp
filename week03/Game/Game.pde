@@ -28,8 +28,8 @@ void mouseDragged() {
    int tempX = pmouseY - mouseY;
    int tempZ = pmouseX - mouseX;
    
-   rx += addBit(tempX, 0.01);
-   rz += addBit(tempZ, 0.01);
+   rx += addBit(tempX, 0.05);
+   rz += addBit(tempZ, 0.05);
    
    rx = intervalTest(rx, minAngle, maxAngle);
    rz = intervalTest(rz, minAngle, maxAngle);
