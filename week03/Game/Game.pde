@@ -9,6 +9,7 @@ float ballRadius = 10;
 float boardFactor = 1;
 
 Mover mover;
+Cylinder cylinder;
 
 void settings() {
   size(500, 500, P3D);
@@ -17,6 +18,8 @@ void settings() {
 void setup () {
   noStroke();
   mover = new Mover(gameWidth, gameHeight, ballRadius);
+  cylinder = new Cylinder(100, 100, 50, 50, 40);
+  cylinder.param();
 }
 
 void draw() {
@@ -29,12 +32,10 @@ void draw() {
   rotateX(-rx);
   box(gameWidth, 6, gameHeight);
   
-  mover.compute(rx, rz);
-  mover.update();
-  mover.checkEdges();
-  
-  translate(mover.location.x, -13, mover.location.y);
+  cylinder.dessine();
+  mover.dessine();
   sphere(ballRadius);
+  
 }
 
 void mouseDragged() {
@@ -52,6 +53,7 @@ void mouseWheel(MouseEvent event) {
   float e = event.getCount();
   boardFactor = boardFactor * (float) Math.pow(1.05, -e);
 }
+
 
 float addBit(float test, float bit) {
   if (test < 0) return bit;

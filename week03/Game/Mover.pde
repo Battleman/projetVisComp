@@ -72,4 +72,13 @@ class Mover {
       velocity.y = - bounceCoeff * velocity.y;
     }
   }
+  
+  void dessine() {
+    
+    translate(mover.location.x, -13, mover.location.y);
+        mover.compute(rx, rz);
+    mover.update();
+    mover.checkEdges();
+    //translate(-mover.location.x, 13, -mover.location.y);
+  }
 }
