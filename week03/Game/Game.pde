@@ -7,6 +7,8 @@ float gameWidth = 300;
 float gameHeight = 300;
 float ballRadius = 10;
 float boardFactor = 1;
+ArrayList<PVector> vec = new ArrayList<PVector>();
+float radius = 25;
 
 Mover mover;
 Cylinder cylinder;
@@ -18,8 +20,9 @@ void settings() {
 void setup () {
   noStroke();
   mover = new Mover(gameWidth, gameHeight, ballRadius);
-  cylinder = new Cylinder(100, 100, 50, 50, 40);
-  cylinder.param();
+  vec.add(new PVector(100, 100));
+  //cylinder = new Cylinder(100, 100, 50, 50, 40);
+  //cylinder.param();
 }
 
 void draw() {
@@ -31,9 +34,15 @@ void draw() {
   rotateZ(rz);
   rotateX(-rx);
   box(gameWidth, 6, gameHeight);
-  
-  cylinder.dessine();
+
+  for(int i = 0; i < vec.size(); i++) {
+    cylinder = new Cylinder(vec.get(i).x, vec.get(i).y, radius, 50, 40);
+    cylinder.param();
+    cylinder.dessine();
+  }
+  mover.checkCylinderCollision(vec, radius);
   mover.dessine();
+  //mover.checkCylinderCollision(vec, radius);
   sphere(ballRadius);
   
 }
@@ -54,6 +63,26 @@ void mouseWheel(MouseEvent event) {
   boardFactor = boardFactor * (float) Math.pow(1.05, -e);
 }
 
+void keyPressed() {
+  if(key == CODED) {
+    if(keyCode == SHIFT) {
+      noLoop();
+      camera(width / 2, height / 2, depth, 250, 250, 0, 0, 1, 0);
+      background(200);
+      rect(100, 100, gameWidth, gameHeight);
+      float mX = map(mouseX, 100, gameWidth+100, -PI, PI);
+      float mY = map(mouseY, 100, gameHeight+100, -PI, PI);
+      if(mousePressed == true) {
+        println("shit");
+        vec.add(new PVector(mX, mY));
+      }
+    }
+  }
+}
+
+void keyReleased(){
+  loop();
+}
 
 float addBit(float test, float bit) {
   if (test < 0) return bit;
