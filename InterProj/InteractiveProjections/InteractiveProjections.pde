@@ -1,42 +1,25 @@
-float scaleFactor = 1;
-float rotX = 0;
-float rotY = 0;
-
-
 void settings() {
-  size(200, 200, P3D);
+size(1000, 1000, P2D);
 }
-
-void setup () {}
-
+void setup () {
+}
 void draw() {
-  background(255, 255, 255);
-  My3DPoint eye = new My3DPoint(0, 0, -5000);
-  My3DPoint origin = new My3DPoint(0, 0, 0);
-  My3DBox input3DBox = new My3DBox(origin, 100, 150, 300);
-
-  //rotated around x
-  float[][] transform1 = rotateXMatrix(PI/8);
-  input3DBox = transformBox(input3DBox, transform1);
-  //projectBox(eye, input3DBox).render();
-
-  //rotated and translated
-  float[][] transform2 = translationMatrix(200, 200, 0);
-  input3DBox = transformBox(input3DBox, transform2);
-  //projectBox(eye, input3DBox).render();
-
-  //rotated, translated, and scaled
-  float[][] transform3 = scaleMatrix(2, 2, 2);
-  input3DBox = transformBox(input3DBox, transform3);
-  //projectBox(eye, input3DBox).render();
-  
-  float[][] transformMouse = scaleMatrix(scaleFactor, scaleFactor, scaleFactor);
-  float[][] transformArrowX = rotateXMatrix(rotX);
-  float[][] transformArrowY = rotateYMatrix(rotY);
-  input3DBox = transformBox(input3DBox, transformMouse);
-  input3DBox = transformBox(input3DBox, transformArrowX);
-  input3DBox = transformBox(input3DBox, transformArrowY);
-  projectBox(eye, input3DBox).render();
+background(255, 255, 255);
+My3DPoint eye = new My3DPoint(0, 0, -5000);
+My3DPoint origin = new My3DPoint(0, 0, 0);
+My3DBox input3DBox = new My3DBox(origin, 100, 150, 300);
+//rotated around x
+float[][] transform1 = rotateXMatrix(PI/8);
+input3DBox = transformBox(input3DBox, transform1);
+projectBox(eye, input3DBox).render();
+//rotated and translated
+float[][] transform2 = translationMatrix(200, 200, 0);
+input3DBox = transformBox(input3DBox, transform2);
+projectBox(eye, input3DBox).render();
+//rotated, translated, and scaled
+float[][] transform3 = scaleMatrix(2, 2, 2);
+input3DBox = transformBox(input3DBox, transform3);
+projectBox(eye, input3DBox).render();
 }
 
 class My2DPoint {
@@ -180,32 +163,12 @@ My3DPoint euclidian3DPoint (float[] a) {
   return result;
 }
 
-void mouseDragged() {
-  int temp = mouseY - pmouseY;
-  if (temp < 0) {
-    scaleFactor *= 0.9;
-  }
-  else if (temp > 0) {
-    scaleFactor *= 1.1;
-  }
-}
-
 void keyPressed() {
   if (key == CODED) {
-    switch (keyCode) {
-      case UP :
-        rotX += 0.1;
-      break;
-      case DOWN :
-        rotX -= 0.1;
-      break;
-      case LEFT :
-        rotY += 0.1;
-      break;
-      case RIGHT :
-        rotY -= 0.1;
-      break;
-      default :
+    if (keyCode == UP) {
+      rotateXMatrix(PI);
+    } else if (keyCode == DOWN) {
+      rotateXMatrix(-PI);
     }
   }
 }
