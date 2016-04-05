@@ -3,85 +3,105 @@ float rx = 0;
 float rz = 0;
 float minAngle = -PI / 3;
 float maxAngle = PI / 3;
-float gameWidth = 300;
-float gameHeight = 300;
+float gameW = 300;
+float gameH = 300;
 float ballRadius = 10;
 float boardFactor = 1;
 ArrayList<PVector> vec = new ArrayList<PVector>();
 float radius = 25;
+int winW = 1200;
+int winH = 720;
+boolean placeMode = false;
 
 Mover mover;
 Cylinder cylinder;
 
 void settings() {
-  size(500, 500, P3D);
+  size(winW, winH, P3D);
 }
 
 void setup () {
   noStroke();
-  mover = new Mover(gameWidth, gameHeight, ballRadius);
-  vec.add(new PVector(100, 100));
-  //cylinder = new Cylinder(100, 100, 50, 50, 40);
-  //cylinder.param();
+  mover = new Mover(gameW, gameH, ballRadius);
 }
 
 void draw() {
-  camera(width / 2, height / 2, depth, 250, 250, 0, 0, 1, 0);
-  directionalLight(50, 100, 125, 0, -1, 0);
+  perspective();
+  camera(width / 2, 0, depth, winW / 2, winH / 2, 0, 0, 1, 0);
+  directionalLight(50, 100, 125, 0, 1, 0);
   ambientLight(102, 102, 102);
   background(200);
   translate(width / 2, height / 2, 0);
   rotateZ(rz);
   rotateX(-rx);
-  box(gameWidth, 6, gameHeight);
+  box(gameW, 6, gameH);
 
-  for(int i = 0; i < vec.size(); i++) {
+  for (int i = 0; i < vec.size(); i++) {
     cylinder = new Cylinder(vec.get(i).x, vec.get(i).y, radius, 50, 40);
     cylinder.param();
     cylinder.dessine();
   }
+  
   mover.checkCylinderCollision(vec, radius);
   mover.dessine();
-  //mover.checkCylinderCollision(vec, radius);
   sphere(ballRadius);
   
+  placeMode();
 }
 
 void mouseDragged() {
-   int tempX = pmouseY - mouseY;
-   int tempZ = pmouseX - mouseX;
+  if (!placeMode) {
+    int tempX = pmouseY - mouseY;
+    int tempZ = pmouseX - mouseX;
    
-   rx += addBit(tempX, 0.05 * boardFactor);
-   rz += addBit(tempZ, 0.05 * boardFactor);
+    rx += addBit(tempX, 0.05 * boardFactor);
+    rz += addBit(tempZ, 0.05 * boardFactor);
    
-   rx = intervalTest(rx, minAngle, maxAngle);
-   rz = intervalTest(rz, minAngle, maxAngle);
+    rx = intervalTest(rx, minAngle, maxAngle);
+    rz = intervalTest(rz, minAngle, maxAngle);
+  }
 }
 
 void mouseWheel(MouseEvent event) {
-  float e = event.getCount();
-  boardFactor = boardFactor * (float) Math.pow(1.05, -e);
+  if (!placeMode) {
+    float e = event.getCount();
+    boardFactor = boardFactor * (float) Math.pow(1.05, -e);
+  }
 }
 
 void keyPressed() {
-  if(key == CODED) {
-    if(keyCode == SHIFT) {
-      noLoop();
-      camera(width / 2, height / 2, depth, 250, 250, 0, 0, 1, 0);
-      background(200);
-      rect(100, 100, gameWidth, gameHeight);
-      float mX = map(mouseX, 100, gameWidth+100, -PI, PI);
-      float mY = map(mouseY, 100, gameHeight+100, -PI, PI);
-      if(mousePressed == true) {
-        println("shit");
-        vec.add(new PVector(mX, mY));
-      }
+  if (key == CODED && keyCode == SHIFT) {
+    placeMode = true;
+  }
+}
+
+void keyReleased() {
+  if (key == CODED && keyCode == SHIFT) {
+    placeMode = false;
+    loop(); 
+  }
+}
+
+void mouseClicked() {
+  if (placeMode) {
+    float mX = map(mouseX, 0, winW, (gameW - winW) / 2, (gameW + winW) / 2);
+    float mY = map(mouseY, 0, winH, (gameH - winH) / 2, (gameH + winH) / 2);
+    if (mX >= radius && mX <= gameW - radius && mY >= radius && mY <= gameH - radius) {
+      println(mX + ", " + mY);
+      vec.add(new PVector(mX - gameW / 2, mY - gameH / 2));
     }
   }
 }
 
-void keyReleased(){
-  loop();
+void placeMode() {
+  if (placeMode) {
+    noLoop();
+    camera(0, 0, 0, 1, 0, 0, 0, 1, 0);
+    ortho();
+    background(200);
+    translate(1, 0, 0);
+    box(1, gameH, gameW);
+  }
 }
 
 float addBit(float test, float bit) {

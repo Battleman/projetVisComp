@@ -18,7 +18,7 @@ class Cylinder {
     float[] z = new float[res + 1];
     
     //get the x and y position on a circle for all the sides
-    for(int i = 0; i < x.length; i++) {
+    for (int i = 0; i < x.length; i++) {
       angle = (TWO_PI / res) * i;
       x[i] = sin(angle) * radius;
       z[i] = cos(angle) * radius;
@@ -27,7 +27,7 @@ class Cylinder {
     
     cylinder.beginShape(QUAD_STRIP);
     //draw the border of the cylinder
-    for(int i = 0; i < x.length; i++) {
+    for (int i = 0; i < x.length; i++) {
       cylinder.vertex(x[i], 0, z[i]);
       cylinder.vertex(x[i], -cylinderHeight, z[i]);
     }
@@ -36,7 +36,7 @@ class Cylinder {
     cylinderHat = createShape();
     
     cylinderHat.beginShape(TRIANGLE_FAN);
-    for(int i = 0; i < x.length; i++) {
+    for (int i = 0; i < x.length; i++) {
       cylinderHat.vertex(x[i], -cylinderHeight, z[i]);
     }
     cylinderHat.endShape();

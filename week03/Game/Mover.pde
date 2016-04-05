@@ -75,7 +75,6 @@ class Mover {
   }
   
   void dessine() {
-    
     translate(mover.location.x, -13, mover.location.y);
     mover.compute(rx, rz);
     mover.update();
@@ -84,18 +83,15 @@ class Mover {
   }
   
   void checkCylinderCollision(ArrayList<PVector> vec, float radius) {
-    PVector temp = new PVector(0, 0);
-    for(int i = 0; i < vec.size(); i++) {
-      if(new PVector(location.x, location.y).dist(vec.get(i)) == radius) {
-        PVector n = new PVector(location.x - vec.get(i).x, location.y - vec.get(i).y);//modifier
-        PVector v1 = new PVector(velocity.x, velocity.y);
-        PVector v2 = v1.sub(n.mult(2*(v1.dot(n))));
-        temp.x += v2.x;
-        temp.y += v2.y;
+    for (int i = 0; i < vec.size(); i++) {
+      PVector temp = vec.get(i);
+      if (location.dist(temp) < radius + ballRadius) {
+        PVector n = new PVector(location.x - temp.x, location.y - temp.y);
+        PVector unit = n.copy().normalize();
+        location = temp.copy().add(unit.copy().mult(n.mag() + ballRadius));
+        velocity.sub(unit.mult(2 * (velocity.copy().dot(unit)))).mult(bounceCoeff);
       }
     }
-    velocity.x += temp.x;
-    velocity.y += temp.y;
   }
 }
   
