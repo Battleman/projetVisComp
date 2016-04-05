@@ -4,7 +4,7 @@ float rotY = 0;
 
 
 void settings() {
-  size(200, 200, P3D);
+  size(500, 500, P3D);
 }
 
 void setup () {}
