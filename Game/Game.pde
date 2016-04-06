@@ -5,6 +5,7 @@ float minAngle = -PI / 3;
 float maxAngle = PI / 3;
 float gameW = 300;
 float gameH = 300;
+float gameT = 6;
 float ballRadius = 10;
 float boardFactor = 1;
 ArrayList<PVector> vec = new ArrayList<PVector>();
@@ -12,6 +13,12 @@ float radius = 25;
 int winW = 1200;
 int winH = 720;
 boolean placeMode = false;
+int axeDist = 15;
+int axeSize = 10;
+int border = 2;
+int camX = 0;
+int camY = -400;
+int camZ = 500;
 
 Mover mover;
 Cylinder cylinder;
@@ -27,14 +34,34 @@ void setup () {
 
 void draw() {
   perspective();
-  camera(width / 2, 0, depth, winW / 2, winH / 2, 0, 0, 1, 0);
+  camera(camX, camY, camZ, 0, 0, 0, 0, 1, 0);
   directionalLight(50, 100, 125, 0, 1, 0);
   ambientLight(102, 102, 102);
   background(200);
-  translate(width / 2, height / 2, 0);
+  translate(-axeDist - gameW / sqrt(2), 0, 0);
+  fill(0, 0, 255);
+  box(axeSize, axeSize, gameH);
+  translate(0, axeDist + gameH / sqrt(2), -axeDist - gameH / sqrt(2));
+  fill(0, 255, 0);
+  box(axeSize, gameW, axeSize);
+  translate(axeDist + gameW / sqrt(2), -axeDist - gameH / sqrt(2), 0);
+  fill(255, 0, 0);
+  box(gameW, axeSize, axeSize);
+  translate(0, 0, axeDist + gameH / sqrt(2));
   rotateZ(rz);
   rotateX(-rx);
-  box(gameW, 6, gameH);
+  fill(100, 100, 100);
+  translate(-(gameW + border) / 2, 0, 0);
+  box(border, 2 * ballRadius + gameT / 2, gameH);
+  translate(gameW + border, 0, 0);
+  box(border, 2 * ballRadius + gameT / 2, gameH);
+  translate(-(gameW + border) / 2, 0, (gameH + border) / 2);
+  box(gameW, 2 * ballRadius + gameT / 2, border);
+  translate(0, 0, -gameH - border);
+  box(gameW, 2 * ballRadius + gameT / 2, border);
+  translate(0, 0, (gameH + border) / 2);
+  box(gameW, gameT, gameH);
+  if (keyCode != 0) println(keyCode);
 
   for (int i = 0; i < vec.size(); i++) {
     cylinder = new Cylinder(vec.get(i).x, vec.get(i).y, radius, 50, 40);
@@ -72,6 +99,30 @@ void mouseWheel(MouseEvent event) {
 void keyPressed() {
   if (key == CODED && keyCode == SHIFT) {
     placeMode = true;
+  }
+  
+  if (key == CODED) {
+    switch (keyCode) {
+      case 17: camY+=100;
+        println("Up" + camY);
+      break;
+      case 18: camY-=100;
+      println("Down" + camY);
+      break;
+      case 37: camX-=100;
+      println("Left" + camX);
+      break;
+      case 38: camZ-=100;
+      println("Front" + camZ);
+      break;
+      case 39: camX+=100;
+      println("Right" + camX);
+      break;
+      case 40: camZ+=100;
+      println("Back" + camZ);
+      break;
+      default:
+    }
   }
 }
 
