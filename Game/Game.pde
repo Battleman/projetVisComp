@@ -13,6 +13,7 @@ float radius = 25;
 int winW = 1200;
 int winH = 720;
 boolean placeMode = false;
+boolean debugMode = false;
 int axeDist = 15;
 int axeSize = 10;
 int border = 2;
@@ -22,6 +23,8 @@ int camZ = 500;
 
 Mover mover;
 Cylinder cylinder;
+Axes axes;
+Plate plate;
 
 void settings() {
   size(winW, winH, P3D);
@@ -30,6 +33,8 @@ void settings() {
 void setup () {
   noStroke();
   mover = new Mover(gameW, gameH, ballRadius);
+  axes = new Axes(gameW, gameH, axeSize, axeDist);
+  plate = new Plate(gameW, gameH, gameT, 2 * ballRadius + gameT / 2, border);
 }
 
 void draw() {
@@ -38,29 +43,12 @@ void draw() {
   directionalLight(50, 100, 125, 0, 1, 0);
   ambientLight(102, 102, 102);
   background(200);
-  translate(-axeDist - gameW / sqrt(2), 0, 0);
-  fill(0, 0, 255);
-  box(axeSize, axeSize, gameH);
-  translate(0, axeDist + gameH / sqrt(2), -axeDist - gameH / sqrt(2));
-  fill(0, 255, 0);
-  box(axeSize, gameW, axeSize);
-  translate(axeDist + gameW / sqrt(2), -axeDist - gameH / sqrt(2), 0);
-  fill(255, 0, 0);
-  box(gameW, axeSize, axeSize);
-  translate(0, 0, axeDist + gameH / sqrt(2));
+  
+  axes.dessine();
   rotateZ(rz);
   rotateX(-rx);
-  fill(100, 100, 100);
-  translate(-(gameW + border) / 2, 0, 0);
-  box(border, 2 * ballRadius + gameT / 2, gameH);
-  translate(gameW + border, 0, 0);
-  box(border, 2 * ballRadius + gameT / 2, gameH);
-  translate(-(gameW + border) / 2, 0, (gameH + border) / 2);
-  box(gameW, 2 * ballRadius + gameT / 2, border);
-  translate(0, 0, -gameH - border);
-  box(gameW, 2 * ballRadius + gameT / 2, border);
-  translate(0, 0, (gameH + border) / 2);
-  box(gameW, gameT, gameH);
+  plate.dessine();
+  
   if (keyCode != 0) println(keyCode);
 
   for (int i = 0; i < vec.size(); i++) {
@@ -71,7 +59,6 @@ void draw() {
   
   mover.checkCylinderCollision(vec, radius);
   mover.dessine();
-  sphere(ballRadius);
   
   placeMode();
 }
@@ -101,7 +88,7 @@ void keyPressed() {
     placeMode = true;
   }
   
-  if (key == CODED) {
+  if (debugMode && key == CODED) {
     switch (keyCode) {
       case 17: camY+=100;
         println("Up" + camY);

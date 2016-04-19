@@ -79,7 +79,8 @@ class Mover {
     mover.compute(rx, rz);
     mover.update();
     mover.checkEdges();
-    //translate(-mover.location.x, 13, -mover.location.y);
+    sphere(ballRadius);
+    translate(-mover.location.x, 13, -mover.location.y);
   }
   
   void checkCylinderCollision(ArrayList<PVector> vec, float radius) {
