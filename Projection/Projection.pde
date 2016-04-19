@@ -50,23 +50,11 @@ class My3DPoint {
 //Method to project any 3D point to a 2D point, 
 //given the point and the eye from where we see
 My2DPoint projectPoint(My3DPoint eye, My3DPoint p) {
-  
-  float[][] pFloat = pointToDouble(p);
-  
-  float[][] trans = {{1, 0, 0, -eye.x},
-                   {0, 1, 0, -eye.y},
-                   {0, 0, 1, -eye.z},
-                   {0, 0, 0, 1}};
-    
-   
-  float[][] proj = {{1, 0, 0, 0},
-                   {0, 1, 0, 0},
-                   {0, 0, 1, 0},
-                   {0, 0, -1/eye.x, 0}};
-         
-  My2DPoint point = doubleTo2DPoint(produitMatrices(proj, produitMatrices(trans, pFloat)));
-  return new My2DPoint(point.x * (eye.z - p.z)/eye.z,point.y * (eye.z - p.z)/eye.z); 
-  
+  float [] pTP = {(p.x-eye.x)*(-eye.z)/(p.z-eye.z),
+                  (p.y-eye.y)*(-eye.z)/(p.z-eye.z), 
+                  (p.z-eye.z)*(-eye.z)/(p.z-eye.z), 
+                   1};
+  return new My2DPoint(pTP[0], pTP[1]); 
 }
 
 //Definition of a box in 2D (projected)
