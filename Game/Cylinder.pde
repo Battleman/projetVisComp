@@ -12,6 +12,18 @@ class Cylinder {
     this.res = res;
   }
   
+  float getX() {
+    return x;
+  }
+  
+  float getY() {
+    return y;
+  }
+  
+  float getRadius() {
+    return radius; 
+  }
+  
   void param() {
     float angle;
     float[] x = new float[res + 1];

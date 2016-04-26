@@ -29,6 +29,10 @@ class Mover {
     this.ballRadius = ballRadius;
   }
   
+  PVector getPos() {
+    return location;
+  }
+  
   void update() {
     velocity.add(force);
     location.add(velocity);

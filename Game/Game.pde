@@ -13,18 +13,24 @@ float radius = 25;
 int winW = 1200;
 int winH = 720;
 boolean placeMode = false;
-boolean debugMode = false;
+boolean debugMode = true;
 int axeDist = 15;
 int axeSize = 10;
 int border = 2;
 int camX = 0;
 int camY = -400;
 int camZ = 500;
+int hudH = 150;
+int hudR = 255;
+int hudG = 114;
+int hudB = 0;
 
 Mover mover;
 Cylinder cylinder;
 Axes axes;
 Plate plate;
+HUD hud;
+HUDTopDown hudTD;
 
 void settings() {
   size(winW, winH, P3D);
@@ -35,15 +41,18 @@ void setup () {
   mover = new Mover(gameW, gameH, ballRadius);
   axes = new Axes(gameW, gameH, axeSize, axeDist);
   plate = new Plate(gameW, gameH, gameT, 2 * ballRadius + gameT / 2, border);
+  hud = new HUD((int) winW, hudH, 0, winH - hudH, hudR, hudG, hudB);
+  hudTD = new HUDTopDown(hudH - 20, hudH - 20, gameW, gameH, ballRadius, radius, mover, vec);
+  hud.addAsset(hudTD.getContext(), 10, 10);
 }
 
 void draw() {
+  pushMatrix();
   perspective();
   camera(camX, camY, camZ, 0, 0, 0, 0, 1, 0);
   directionalLight(50, 100, 125, 0, 1, 0);
   ambientLight(102, 102, 102);
   background(200);
-  
   axes.dessine();
   rotateZ(rz);
   rotateX(-rx);
@@ -61,6 +70,9 @@ void draw() {
   mover.dessine();
   
   placeMode();
+  popMatrix();
+  
+  hud.dessine();
 }
 
 void mouseDragged() {
