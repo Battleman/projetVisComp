@@ -22,5 +22,6 @@ class Axes {
     fill(255, 0, 0);
     box(gameW, axeSize, axeSize);
     translate(0, 0, axeDist + gameH / sqrt(2));
+    noFill();
   }
 }

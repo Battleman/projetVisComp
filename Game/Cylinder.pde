@@ -28,6 +28,7 @@ class Cylinder {
     float angle;
     float[] x = new float[res + 1];
     float[] z = new float[res + 1];
+    fill(100);
     
     //get the x and y position on a circle for all the sides
     for (int i = 0; i < x.length; i++) {
@@ -48,11 +49,12 @@ class Cylinder {
     cylinderHat = createShape();
     
     cylinderHat.beginShape(TRIANGLE_FAN);
+    cylinderHat.vertex(0, -cylinderHeight, 0);
     for (int i = 0; i < x.length; i++) {
       cylinderHat.vertex(x[i], -cylinderHeight, z[i]);
     }
     cylinderHat.endShape();
-    
+    noFill();
   }
   
   void dessine() {

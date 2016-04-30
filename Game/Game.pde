@@ -24,6 +24,7 @@ int hudH = 150;
 int hudR = 255;
 int hudG = 114;
 int hudB = 0;
+int scoreW = 100;
 
 Mover mover;
 Cylinder cylinder;
@@ -31,6 +32,7 @@ Axes axes;
 Plate plate;
 HUD hud;
 HUDTopDown hudTD;
+HUDScore hudScore;
 
 void settings() {
   size(winW, winH, P3D);
@@ -43,7 +45,9 @@ void setup () {
   plate = new Plate(gameW, gameH, gameT, 2 * ballRadius + gameT / 2, border);
   hud = new HUD((int) winW, hudH, 0, winH - hudH, hudR, hudG, hudB);
   hudTD = new HUDTopDown(hudH - 20, hudH - 20, gameW, gameH, ballRadius, radius, mover, vec);
-  hud.addAsset(hudTD.getContext(), 10, 10);
+  hud.addAsset(hudTD, 10, 10);
+  hudScore = new HUDScore(scoreW, hudH - 20, mover);
+  hud.addAsset(hudScore, 150, 10);
 }
 
 void draw() {
@@ -150,7 +154,9 @@ void placeMode() {
     ortho();
     background(200);
     translate(1, 0, 0);
+    fill(200);
     box(1, gameH, gameW);
+    noFill();
   }
 }
 

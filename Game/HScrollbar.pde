@@ -6,6 +6,7 @@ class HScrollbar {
   
   float sliderPosition, newSliderPosition;    //Position of slider
   float sliderPositionMin, sliderPositionMax; //Max and min values of slider
+  float sliderValue;
   
   boolean mouseOver;  //Is the mouse over the slider?
   boolean locked;     //Is the mouse clicking and dragging the slider now?
