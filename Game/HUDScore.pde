@@ -12,7 +12,6 @@ class HUDScore extends HUDAsset {
     this.mover = mover;
     
     back = createGraphics(chartW, chartH, P2D);
-    text = createGraphics(chartW, chartH, P2D);
     
     back.beginDraw();
     back.background(0);
@@ -29,11 +28,12 @@ class HUDScore extends HUDAsset {
   
   void dessine(float x, float y) {
     image(back, x, y);
-    image(text, x, y);
     totalValue = Integer.toString(mover.getScore());
     velValue = Integer.toString(mover.getVelocity());
     lastValue = Integer.toString(mover.getLastScore());
-    finalText = totalTitle + totalValue + "\n\n" + velTitle + velValue + "\n\n" + lastTitle + lastValue;
+    finalText = totalTitle + totalValue + "\n\n"
+                + velTitle + velValue + "\n\n"
+                + lastTitle + lastValue;
     f = createFont("Courier", 16, true);
     text(finalText, x + 10, y + 20);
   }

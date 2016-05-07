@@ -34,6 +34,7 @@ Plate plate;
 HUD hud;
 HUDTopDown hudTD;
 HUDScore hudScore;
+HUDChart hudChart;
 
 void settings() {
   size(winW, winH, P3D);
@@ -49,6 +50,8 @@ void setup () {
   hud.addAsset(hudTD, 10, 10);
   hudScore = new HUDScore(scoreW, hudH - 20, mover);
   hud.addAsset(hudScore, 150, 10);
+  hudChart = new HUDChart(840, hudH - 20, 20, 20, 1, 400, 20, mover);
+  hud.addAsset(hudChart, 300, 10);
 }
 
 void draw() {
