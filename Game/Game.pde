@@ -50,7 +50,7 @@ void setup () {
   hud.addAsset(hudTD, 10, 10);
   hudScore = new HUDScore(scoreW, hudH - 20, mover);
   hud.addAsset(hudScore, 150, 10);
-  hudChart = new HUDChart(930, hudH - 20, 20, 20, 2, 40, 20, mover);
+  hudChart = new HUDChart(930, hudH - 20, 20, 20, 2, 200, 20, mover);
   hud.addAsset(hudChart, 260, 10);
 }
 

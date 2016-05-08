@@ -109,7 +109,7 @@ class Mover {
     if (sign) {
       temp = 1;
     }
-    lastScore = getVelocity() * temp;
+    lastScore = (int) (200 * Math.random()) - 100;//getVelocity() * temp;
     score += lastScore;
   }
   
