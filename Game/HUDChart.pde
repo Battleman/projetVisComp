@@ -1,39 +1,43 @@
 class HUDChart extends HUDAsset {
-  int chartW, chartH, padding, start, count, min, max, oldMin, oldMax, threshold, amount, split, barHeight, distance;
+  int scoreW, chartW, chartH, totalW, totalH, padding, start, count, min, max, threshold, amount, barHeight, distance;
   int[] scores;
   double visible;
   Mover mover;
   PGraphics back, grid, data, text;
   HScrollbar bar;
 
-  HUDChart(int chartW, int chartH, int barHeight, int distance, int padding, int amount, int threshold, Mover mover) {
-    this.chartW = chartW;
-    this.chartH = chartH - barHeight - distance;
+  HUDChart(int totalW, int totalH, int barHeight, int distance, int padding, int amount, int threshold, Mover mover) {
+    this.totalW = totalW;
+    this.totalH = totalH;
     this.padding = padding;
     this.threshold = Math.max(10, Math.abs(threshold));
     this.mover = mover;
-    this.scores = new int[amount];
-    this.start = 0;
-    this.count = 0;
     this.barHeight = barHeight;
     this.distance = distance;
     this.amount = amount;
-    this.max = threshold;
-    this.min = -threshold;
-    this.visible = 0.55;
     
-    back = createGraphics(chartW, this.chartH, P2D);
-    grid = createGraphics(chartW, this.chartH, P2D);
-    data = createGraphics(chartW, this.chartH, P2D);
-    text = createGraphics(chartW, this.chartH, P2D);
+    scoreW = 60;
+    chartW = totalW - scoreW;
+    chartH = totalH - barHeight - distance;
+    scores = new int[amount];
+    start = 0;
+    count = 0;
+    max = threshold;
+    min = -threshold;
+    visible = 0.55;
+    
+    back = createGraphics(chartW, chartH, P2D);
+    grid = createGraphics(chartW, chartH, P2D);
+    data = createGraphics(chartW, chartH, P2D);
+    text = createGraphics(scoreW, chartH, P2D);
     
     back.beginDraw();
     back.background(255);
     back.endDraw();
     
-    bar = new HScrollbar(chartW, barHeight, 50, 1);
+    bar = new HScrollbar(totalW, barHeight, 50, 1);
     
-    //drawGrid();
+    drawGrid();
   }
   
   int index() {
@@ -81,14 +85,14 @@ class HUDChart extends HUDAsset {
       }
       data.endDraw();
       
-      //drawGrid();
+      drawGrid();
       
       mover.resetHit();
     }
     
-    image(back, x, y);
-    image(grid, x, y);
-    image(data, x, y);
+    image(back, x + scoreW, y);
+    image(grid, x + scoreW, y);
+    image(data, x + scoreW, y);
     image(text, x, y);
     
     bar.dessine(x, y + chartH + distance);
@@ -99,22 +103,48 @@ class HUDChart extends HUDAsset {
     
     return (int) (((max - score) * factor * chartH / (double) (max - min)) + chartH * (1 - factor) / 2);
   }
+  
+  int getClosest(int n) {
+    double n5 = (int) Math.log10(n / 5d);
+    double n10 = (int) Math.log10(n / 10d);
+    double n25 = (int) Math.log10(n / 25d);
+    
+    n5 = 5 * Math.pow(10, n5);
+    n10 = 10 * Math.pow(10, n10);
+    n25 = 25 * Math.pow(10, n25);
+    
+    return (int) Math.max(n5, Math.max(n10, n25));
+  }
     
   void drawGrid() {
     int temp = 0;
-    int space = (int) Math.pow(10, Math.floor(Math.log10(max - min)) - 1);
+    int policeSize = 12;
+    int minSize = (int) (policeSize * 2.5);
+    double factor = 0.95;
+    int n = (int) (factor * chartH / (double) minSize);
+    int space = getClosest((max - min) / n);
     
     grid.beginDraw();
-    text.beginDraw();
     grid.clear();
+    grid.endDraw();
+    
+    text.beginDraw();
     text.clear();
+    text.background(150);
+    text.textSize(policeSize);
+    text.endDraw();
+    
     for (int i = max / space; i >= min / space; i--) {
       temp = (max - i * space) * chartH / (max - min);
+      
+      grid.beginDraw();
       grid.line(0, temp, chartW, temp);
-      text.text(i * space, 10, temp);
+      grid.endDraw();
+      
+      text.beginDraw();
+      text.text(i * space, 10, temp + policeSize / 2);
+      text.endDraw();
     }
-    grid.endDraw();
-    text.endDraw();
   }
   
   void compute() {
