@@ -1,7 +1,7 @@
 class HUDChart extends HUDAsset {
   int scoreW, chartW, chartH, totalW, totalH, padding, start, count, min, max, threshold, amount, barHeight, distance;
   int[] scores;
-  double visible;
+  double visible, oldVisible;
   Mover mover;
   PGraphics back, grid, data, text;
   HScrollbar bar;
@@ -25,6 +25,7 @@ class HUDChart extends HUDAsset {
     max = threshold;
     min = -threshold;
     visible = 0.55;
+    oldVisible = visible;
     
     back = createGraphics(chartW, chartH, P2D);
     grid = createGraphics(chartW, chartH, P2D);
@@ -52,11 +53,17 @@ class HUDChart extends HUDAsset {
     if (count < visible * amount) return start;
     else return ((int) (index() - visible * amount) % amount + amount) % amount;
   }
+  
+  boolean changedSize() {
+    return oldVisible != visible;
+  }
 
   void dessine(float x, float y) {
     if (mover.hasHit() || bar.mouseOver || bar.locked) {
+      computeNoHit();
       if (mover.hasHit()) compute();
       
+      oldVisible = visible;
       visible = .1 + .9 * bar.getPos();
       
       int temp = 0;
@@ -142,18 +149,17 @@ class HUDChart extends HUDAsset {
       grid.endDraw();
       
       text.beginDraw();
-      text.text(i * space, 10, temp + policeSize / 2);
+      text.text(i * space, 10, Math.max(policeSize + 3, Math.min(chartH - 3, temp + policeSize / 2)));
       text.endDraw();
     }
   }
   
-  void compute() {
-    int temp = mover.getScore();
-    
-    if (temp > max) {
-      max = temp;
-    }
-    else if (scores[firstVisibleIndex()] == max || scores[index()] == max) {
+  boolean full() {
+    return count >= (visible * amount);
+  }
+  
+  void computeNoHit() {
+    if (full() && (changedSize() || scores[firstVisibleIndex()] == max || scores[index()] == max)) {
       max = threshold;
       int i = nextIndex(firstVisibleIndex());
       while (i != index()) {
@@ -164,10 +170,7 @@ class HUDChart extends HUDAsset {
       }
     }
     
-    if (temp < min) {
-      min = temp;
-    }
-    else if (scores[firstVisibleIndex()] == min || scores[index()] == min) {
+    if (full() && (changedSize() || scores[firstVisibleIndex()] == min || scores[index()] == min)) {
       min = -threshold;
       int i = nextIndex(firstVisibleIndex());
       while (i != index()) {
@@ -176,6 +179,18 @@ class HUDChart extends HUDAsset {
         }
         i = nextIndex(i);
       }
+    }
+  }
+  
+  void compute() {
+    int temp = mover.getScore();
+    
+    if (temp > max) {
+      max = temp;
+    }
+    
+    if (temp < min) {
+      min = temp;
     }
     
     scores[index()] = temp;
