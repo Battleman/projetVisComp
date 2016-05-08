@@ -28,6 +28,10 @@ class HUD {
     assetsY = new ArrayList<Float>();
   }
   
+  boolean mouseOver() {
+    return mouseY > y; 
+  }
+  
   void dessine() {
     image(myHud, x, y);
     

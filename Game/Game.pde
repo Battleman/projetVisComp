@@ -13,7 +13,7 @@ float radius = 25;
 int winW = 1200;
 int winH = 720;
 boolean placeMode = false;
-boolean debugMode = true;
+boolean debugMode = false;
 int axeDist = 15;
 int axeSize = 10;
 int border = 2;
@@ -50,8 +50,8 @@ void setup () {
   hud.addAsset(hudTD, 10, 10);
   hudScore = new HUDScore(scoreW, hudH - 20, mover);
   hud.addAsset(hudScore, 150, 10);
-  hudChart = new HUDChart(840, hudH - 20, 20, 20, 1, 400, 20, mover);
-  hud.addAsset(hudChart, 300, 10);
+  hudChart = new HUDChart(930, hudH - 20, 20, 20, 2, 40, 20, mover);
+  hud.addAsset(hudChart, 260, 10);
 }
 
 void draw() {
@@ -65,8 +65,6 @@ void draw() {
   rotateZ(rz);
   rotateX(-rx);
   plate.dessine();
-  
-  if (keyCode != 0) println(keyCode);
 
   for (int i = 0; i < vec.size(); i++) {
     cylinder = new Cylinder(vec.get(i).x, vec.get(i).y, radius, 50, 40);
@@ -84,7 +82,7 @@ void draw() {
 }
 
 void mouseDragged() {
-  if (!placeMode) {
+  if (!placeMode && !hud.mouseOver()) {
     int tempX = pmouseY - mouseY;
     int tempZ = pmouseX - mouseX;
    
@@ -111,7 +109,7 @@ void keyPressed() {
   if (debugMode && key == CODED) {
     switch (keyCode) {
       case 17: camY+=100;
-        println("Up" + camY);
+      println("Up" + camY);
       break;
       case 18: camY-=100;
       println("Down" + camY);

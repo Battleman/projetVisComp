@@ -91,7 +91,9 @@ class HScrollbar extends HUDAsset {
    * @brief Draws the scrollbar in its current state
    */ 
   void dessine(float x, float y) {
+    sliderPosition = newSliderPosition;
     update(x, y);
+    bar.beginDraw();
     bar.fill(204);
     bar.rect(0, 0, barWidth, barHeight);
     if (mouseOver) {
@@ -100,7 +102,10 @@ class HScrollbar extends HUDAsset {
     else {
       bar.fill(102, 102, 102);
     }
-    bar.rect(sliderPosition - sliderW, padding, sliderW, sliderH);
+    bar.rect(sliderPosition - sliderW / 2, padding, sliderW, sliderH);
+    bar.endDraw();
+    
+    image(bar, x, y);
   }
 
   /**
@@ -109,6 +114,6 @@ class HScrollbar extends HUDAsset {
    * @return The slider position in the interval [0,1] corresponding to [leftmost position, rightmost position]
    */
   float getPos() {
-    return sliderPosition / (sliderPositionMax - sliderPositionMin);
+    return (sliderPosition - sliderPositionMin) / (sliderPositionMax - sliderPositionMin);
   }
 }

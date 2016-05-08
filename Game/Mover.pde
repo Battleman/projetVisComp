@@ -14,6 +14,7 @@ class Mover {
   float bounceCoeff;
   int score, lastScore;
   ArrayList<PVector> vec;
+  boolean hit;
 
   Mover(float width0, float height0, float ballRadius) {
     location = new PVector(0, 0);
@@ -26,6 +27,7 @@ class Mover {
     frictionMagnitude = normalForce * mu;
     bounceCoeff = 0.9;
     score = 0;
+    hit = false;
     this.width0 = width0;
     this.height0 = height0;
     this.ballRadius = ballRadius;
@@ -45,6 +47,14 @@ class Mover {
   
   int getLastScore() {
     return lastScore;
+  }
+  
+  boolean hasHit() {
+    return hit;
+  }
+  
+  void resetHit() {
+    hit = false; 
   }
   
   void update() {
@@ -94,6 +104,7 @@ class Mover {
   }
   
   void addScore(Boolean sign) {
+    hit = true;
     int temp = -1;
     if (sign) {
       temp = 1;
