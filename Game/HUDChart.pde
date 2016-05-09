@@ -142,7 +142,7 @@ class HUDChart extends HUDAsset {
     text.endDraw();
     
     for (int i = max / space; i >= min / space; i--) {
-      temp = (max - i * space) * chartH / (max - min);
+      temp = getPos(space * i);
       
       grid.beginDraw();
       grid.line(0, temp, chartW, temp);
