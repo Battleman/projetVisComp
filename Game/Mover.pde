@@ -110,7 +110,16 @@ class Mover {
       temp = 1;
     }
     lastScore = (int) (200 * Math.random()) - 100;//getVelocity() * temp;
-    score += lastScore;
+    
+    if (lastScore > 0 && score + lastScore < score) {
+      score = Integer.MAX_VALUE;
+    }
+    else if (lastScore < 0 && score + lastScore > score) {
+      score = Integer.MIN_VALUE;
+    }
+    else {
+      score += lastScore;
+    }
   }
   
   void dessine() {

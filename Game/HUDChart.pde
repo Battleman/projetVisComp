@@ -126,6 +126,7 @@ class HUDChart extends HUDAsset {
   void drawGrid() {
     int temp = 0;
     int policeSize = 12;
+    int scorePadding = 10;
     int minSize = (int) (policeSize * 2.5);
     double factor = 0.95;
     int n = (int) (factor * chartH / (double) minSize);
@@ -149,9 +150,21 @@ class HUDChart extends HUDAsset {
       grid.endDraw();
       
       text.beginDraw();
-      text.text(i * space, 10, Math.max(policeSize + 3, Math.min(chartH - 3, temp + policeSize / 2)));
+      text.text(correctScore(text, i * space, scoreW - 2 * scorePadding), scorePadding, Math.max(policeSize + 3, Math.min(chartH - 3, temp + policeSize / 2)));
       text.endDraw();
     }
+  }
+  
+  String correctScore(PGraphics graph, int i, int maxWidth) {
+    if (i == 0) {
+      return "0";
+    }
+    else if (graph.textWidth("-" + Integer.toString((int) Math.abs(i))) > maxWidth) {
+      int temp = (int) Math.log10(Math.abs(i));
+      double power = i / Math.pow(10, temp);
+      return Double.toString(power) + 'e' + Integer.toString(temp);
+    }
+    else return Integer.toString(i);
   }
   
   boolean full() {
