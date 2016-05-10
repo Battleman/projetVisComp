@@ -24,8 +24,13 @@ int hudH = 150;
 int hudR = 255;
 int hudG = 114;
 int hudB = 0;
+int hudPadding = 10;
+int hudElemH = hudH - 2 * hudPadding;
 int scoreW = 100;
-
+int tdX = hudPadding;
+int scoreX = tdX + hudElemH + hudPadding;
+int chartX = scoreX + scoreW + hudPadding;
+int chartW = winW - chartX - hudPadding;
 
 Mover mover;
 Cylinder cylinder;
@@ -46,12 +51,19 @@ void setup () {
   axes = new Axes(gameW, gameH, axeSize, axeDist);
   plate = new Plate(gameW, gameH, gameT, 2 * ballRadius + gameT / 2, border);
   hud = new HUD((int) winW, hudH, 0, winH - hudH, hudR, hudG, hudB);
-  hudTD = new HUDTopDown(hudH - 20, hudH - 20, gameW, gameH, ballRadius, radius, mover, vec);
-  hud.addAsset(hudTD, 10, 10);
-  hudScore = new HUDScore(scoreW, hudH - 20, mover);
-  hud.addAsset(hudScore, 150, 10);
-  hudChart = new HUDChart(930, hudH - 20, 20, 20, 2, 200, 20, mover);
-  hud.addAsset(hudChart, 260, 10);
+  hudTD = new HUDTopDown(hudElemH, hudElemH, gameW, gameH, ballRadius, radius, mover, vec);
+  hud.addAsset(hudTD, tdX, hudPadding);
+  hudScore = new HUDScore(scoreW, hudElemH, mover);
+  hud.addAsset(hudScore, scoreX, hudPadding);
+  hudChart = new HUDChart(chartW, hudElemH, 20, hudPadding, 2, 200, 20, mover);
+  hud.addAsset(hudChart, chartX, hudPadding);
+  
+  /*hudTD = new HUDTopDown(hudElemH, hudElemH, gameW, gameH, ballRadius, radius, mover, vec);
+  hud.addAsset(hudTD, tdX, hudPadding);
+  hudScore = new HUDScore(scoreW, hudElemH, mover);
+  hud.addAsset(hudScore, scoreX, hudPadding);
+  hudChart = new HUDChart(chartW, hudElemH, 20, 20, 2, 200, 20, mover);
+  hud.addAsset(hudChart, chartX, hudPadding);*/
 }
 
 void draw() {
