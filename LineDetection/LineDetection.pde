@@ -1,14 +1,19 @@
 import processing.video.*;
+import java.util.Collections;
+import java.util.List;
 
 Capture cam;
 PImage img, result, hough;
+HScrollbar thresholdBar, thresholdBar2;
 
 void settings() {
-  size(640, 480);
+  size(800, 600);
 }
 
 void setup() {
-  String[] cameras = Capture.list();
+  thresholdBar = new HScrollbar(0, 540, 800, 20);
+  thresholdBar2 = new HScrollbar(0, 580, 800, 20);
+  /*String[] cameras = Capture.list();
   
   if (cameras.length == 0) {
     println("There are no cameras available for capture.");
@@ -21,24 +26,45 @@ void setup() {
     }
     cam = new Capture(this, cameras[0]);
     cam.start();
-  }
+  }*/
 }
 
 void draw() {
-  if (cam.available() == true) {
+  /*if (cam.available() == true) {
     cam.read();
   }
-  img = cam.get();
+  img = cam.get();*/
+  img = loadImage("board3.jpg");
   background(color(0));
+  
+  float threshold = 256 * thresholdBar.getPos();//118.5; 121; 109.5; 104;105;
+  float threshold2 = 256 * thresholdBar2.getPos();//133.5; 135; 125.5; 125;133;
+  PImage result = createImage(width, height, RGB);
+  for(int i = 0; i < img.width * img.height; i++) {
+    if(hue(img.pixels[i]) > threshold && hue(img.pixels[i]) < threshold2) {
+      result.pixels[i] = img.pixels[i];
+    }
+    else {
+      result.pixels[i] = color(0, 0, 0);
+    }
+  }
+  
+  
   int[][] kernel = {{9, 12, 9},
                     {12, 15, 12},
                     {9, 12, 9}};
   
-  PImage gauss = convolute(img, kernel);
-  result = sobel(gauss);
-  image(result, 0, 0);
-  hough(result);
-  save("test.png");
+  PImage gauss = convolute(result, kernel);
+  PImage sobel = sobel(gauss);
+  image(sobel, 0, 0);
+  hough(sobel, 4);
+  //save("test.png");
+  thresholdBar.display();
+  thresholdBar.update();
+  thresholdBar2.display();
+  thresholdBar2.update();
+  
+  println("min : " + threshold + " max : " + threshold2);
 }
 
 PImage convolute(PImage img, int[][] kernel) {
@@ -86,7 +112,7 @@ PImage sobel(PImage img) {
     result.pixels[i] = color(0);
   }
   
-  float max=0, sum;
+  float max = 0, sum;
   float[] buffer = new float[img.width * img.height];
   
   int sumH, sumV;
@@ -122,7 +148,8 @@ PImage sobel(PImage img) {
   return result;
 }
 
-void hough(PImage edgeImg) {
+void hough(PImage edgeImg, int nLines) {
+  ArrayList<Integer> bestCandidates = new ArrayList<Integer>();
   float discretizationStepsPhi = 0.06f;
   float discretizationStepsR = 2.5f;
 
@@ -138,8 +165,8 @@ void hough(PImage edgeImg) {
       if (brightness(edgeImg.pixels[y * edgeImg.width + x]) != 0) {
         float phi = 0;
         for (int n = 0; n < phiDim; n++, phi += discretizationStepsPhi) {
-          rTemp = (int) (x*Math.cos(phi) + y*Math.sin(phi));
-          rTemp += (rMax - 1)/2;
+          rTemp = (int) (x * Math.cos(phi) + y * Math.sin(phi));
+          rTemp += (rMax - 1) / 2;
           rTemp /= discretizationStepsR;
           accumulator[n * rDim + (int)rTemp] += 1;
         }
@@ -157,41 +184,115 @@ void hough(PImage edgeImg) {
   
   houghImg.updatePixels();
   
-  for (int idx = 0; idx < accumulator.length; idx++) {
-    if (accumulator[idx] > 200) {
-      int accPhi = (int) (idx / rDim);
-      int accR = idx - accPhi * rDim;
-      float r = accR * discretizationStepsR - (rMax - 1)/2 ;
-      float phi = accPhi * discretizationStepsPhi;
+  //image(houghImg, 0, 0);
   
-      int x0 = 0;
-      int y0 = (int) (r / sin(phi));
-      int x1 = (int) (r / cos(phi));
-      int y1 = 0;
-      int x2 = edgeImg.width;
-      int y2 = (int) (-cos(phi) / sin(phi) * x2 + r / sin(phi));
-      int y3 = edgeImg.width;
-      int x3 = (int) (-(y3 - r / sin(phi)) * (sin(phi) / cos(phi)));
-
-      stroke(204,102,0);
-      if (y0 > 0) {
-        if (x1 > 0)
-          line(x0, y0, x1, y1);
-        else if (y2 > 0)
-          line(x0, y0, x2, y2);
-        else
-          line(x0, y0, x3, y3);
-      }
-      else {
-        if (x1 > 0) {
-          if (y2 > 0)
-            line(x1, y1, x2, y2);
-          else
-            line(x1, y1, x3, y3);
+  int minVotes = 200;
+  
+  int neighbourhood = 10;
+  
+  for (int accR = 0; accR < rDim; accR++) {
+    for (int accPhi = 0; accPhi < phiDim; accPhi++) {
+      int idx = (accPhi + 1) * (rDim + 2) + accR + 1;
+      
+      if (accumulator[idx] > minVotes) {
+        boolean bestCandidate = true;
+        
+        for (int dPhi = -neighbourhood / 2; dPhi < neighbourhood / 2 + 1; dPhi++) {
+          if (accPhi + dPhi < 0 || accPhi + dPhi >= phiDim) continue;
+          
+          for (int dR = -neighbourhood / 2; dR < neighbourhood / 2 + 1; dR++) {
+            if (accR + dR < 0 || accR + dR >= rDim) continue;
+            int neighbourIdx = (accPhi + dPhi + 1) * (rDim + 2) + accR + dR + 1;
+            
+            if (accumulator[idx] < accumulator[neighbourIdx]) {
+              bestCandidate = false;
+              break;
+            }
+          }
+          
+          if (!bestCandidate) break;
         }
-        else 
-          line(x2, y2, x3, y3);
+        
+        if (bestCandidate) {
+          bestCandidates.add(idx);
+        }
       }
     }
   }
+
+  
+  Collections.sort(bestCandidates, new HoughComparator(accumulator));
+  
+  for (int i = 0; i < Math.min(nLines, bestCandidates.size()); i++) {
+    int idx = bestCandidates.get(i);
+    int accPhi = (int) (idx / rDim);
+    int accR = idx - accPhi * rDim;
+    float r = accR * discretizationStepsR - (rMax - 1) / 2 ;
+    float phi = accPhi * discretizationStepsPhi;
+  
+    int x0 = 0;
+    int y0 = (int) (r / sin(phi));
+    int x1 = (int) (r / cos(phi));
+    int y1 = 0;
+    int x2 = edgeImg.width;
+    int y2 = (int) (-cos(phi) / sin(phi) * x2 + r / sin(phi));
+    int y3 = edgeImg.width;
+    int x3 = (int) (-(y3 - r / sin(phi)) * (sin(phi) / cos(phi)));
+
+    stroke(204,102,0);
+    if (y0 > 0) {
+      if (x1 > 0)
+        line(x0, y0, x1, y1);
+      else if (y2 > 0)
+        line(x0, y0, x2, y2);
+      else
+        line(x0, y0, x3, y3);
+    }
+    else {
+      if (x1 > 0) {
+        if (y2 > 0)
+          line(x1, y1, x2, y2);
+        else
+          line(x1, y1, x3, y3);
+      }
+      else 
+        line(x2, y2, x3, y3);
+    }
+  }
+  
+  ArrayList<PVector> vectors = new ArrayList<PVector>();
+  
+  for (int i = 0; i < Math.min(nLines, bestCandidates.size()); i++) {
+    int idx = bestCandidates.get(i);
+    int accPhi = (int) (idx / rDim);
+    int accR = idx - accPhi * rDim;
+    float r = accR * discretizationStepsR - (rMax - 1) / 2 ;
+    float phi = accPhi * discretizationStepsPhi;
+    vectors.add(new PVector((int) (r * Math.cos(phi)), (int) (r * Math.sin(phi))));
+  }
+  
+  getIntersections(vectors);
+}
+
+ArrayList<PVector> getIntersections(List<PVector> lines) {
+  ArrayList<PVector> intersections = new ArrayList<PVector>();
+  for (int i = 0; i < lines.size() - 1; i++) {
+    PVector line1 = lines.get(i);
+    for (int j = i + 1; j < lines.size(); j++) {
+      PVector line2 = lines.get(j);
+      double phi1 = line1.heading();
+      double phi2 = line2.heading();
+      double r1 = line1.mag();
+      double r2 = line2.mag();
+      double d = Math.cos(phi2) * Math.sin(phi1) - Math.cos(phi1) * Math.sin(phi2);
+      int x = (int) ((r2 * Math.sin(phi1) - r1 * Math.sin(phi2)) / d);
+      int y = (int) ((r1 * Math.cos(phi2) - r2 * Math.cos(phi1)) / d);
+      
+      intersections.add(new PVector(x, y));
+      
+      fill(255, 128, 0);
+      ellipse(x, y, 10, 10);
+    }
+  }
+  return intersections;
 }
