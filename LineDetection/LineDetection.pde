@@ -39,24 +39,43 @@ void draw() {
   
   float threshold = 256 * thresholdBar.getPos();//118.5; 121; 109.5; 104;105;
   float threshold2 = 256 * thresholdBar2.getPos();//133.5; 135; 125.5; 125;133;
-  PImage result = createImage(width, height, RGB);
+  PImage hue = createImage(width, height, RGB);
+  PImage bright = createImage(width, height, RGB);
+  PImage sature = createImage(width, height, RGB);
+  
   for(int i = 0; i < img.width * img.height; i++) {
-    if(hue(img.pixels[i]) > threshold && hue(img.pixels[i]) < threshold2) {
-      result.pixels[i] = img.pixels[i];
+    if(hue(img.pixels[i]) > 100 && hue(img.pixels[i]) < 140) {
+      hue.pixels[i] = img.pixels[i];
     }
     else {
-      result.pixels[i] = color(0, 0, 0);
+      hue.pixels[i] = color(0, 0, 0);
     }
   }
+  for(int i = 0; i < img.width * img.height; i++) {
+    if(brightness(img.pixels[i]) > threshold && brightness(img.pixels[i]) < threshold2) {
+      bright.pixels[i] = hue.pixels[i];
+    }
+    else {
+      bright.pixels[i] = color(0, 0, 0);
+    }
+  }/*
+  for(int i = 0; i < img.width * img.height; i++) {
+    if(hue(img.pixels[i]) > threshold && hue(img.pixels[i]) < threshold2) {
+      sature.pixels[i] = bright.pixels[i];
+    }
+    else {
+      sature.pixels[i] = color(0, 0, 0);
+    }
+  }*/
   
   
   int[][] kernel = {{9, 12, 9},
                     {12, 15, 12},
                     {9, 12, 9}};
   
-  PImage gauss = convolute(result, kernel);
+  PImage gauss = convolute(hue, kernel);
   PImage sobel = sobel(gauss);
-  image(sobel, 0, 0);
+  image(bright, 0, 0);
   hough(sobel, 4);
   //save("test.png");
   thresholdBar.display();
