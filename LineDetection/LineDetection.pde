@@ -3,87 +3,53 @@ import java.util.Collections;
 import java.util.List;
 
 Capture cam;
-PImage img, result, hough;
+PImage img;
+int finalW = 400, finalH = 300;
 HScrollbar thresholdBar, thresholdBar2;
 
 void settings() {
-  size(800, 600);
+  size(2 * finalW + finalH, finalH, P2D);
 }
 
-void setup() {
-  thresholdBar = new HScrollbar(0, 540, 800, 20);
-  thresholdBar2 = new HScrollbar(0, 580, 800, 20);
-  /*String[] cameras = Capture.list();
-  
-  if (cameras.length == 0) {
-    println("There are no cameras available for capture.");
-    exit();
-  }
-  else {
-    println("Available cameras:");
-    for (int i = 0; i < cameras.length; i++) {
-      println(cameras[i]);
-    }
-    cam = new Capture(this, cameras[0]);
-    cam.start();
-  }*/
-}
+void setup() {}
 
 void draw() {
-  /*if (cam.available() == true) {
-    cam.read();
-  }
-  img = cam.get();*/
   img = loadImage("board3.jpg");
-  background(color(0));
+  background(0);
   
-  float threshold = 256 * thresholdBar.getPos();//118.5; 121; 109.5; 104;105;
-  float threshold2 = 256 * thresholdBar2.getPos();//133.5; 135; 125.5; 125;133;
-  PImage hue = createImage(width, height, RGB);
-  PImage bright = createImage(width, height, RGB);
-  PImage sature = createImage(width, height, RGB);
+  PImage result = createImage(img.width, img.height, RGB);
+  
+  println(img.width + img.height);
   
   for(int i = 0; i < img.width * img.height; i++) {
-    if(hue(img.pixels[i]) > 100 && hue(img.pixels[i]) < 140) {
-      hue.pixels[i] = img.pixels[i];
+    int temp = img.pixels[i];
+    if (hue(temp) > 100 && hue(temp) < 140 && brightness(temp) > 60
+        && brightness(temp) < 160 && saturation(temp) > 100) {
+      result.pixels[i] = color(255);
     }
     else {
-      hue.pixels[i] = color(0, 0, 0);
+      result.pixels[i] = color(0);
     }
   }
-  for(int i = 0; i < img.width * img.height; i++) {
-    if(brightness(img.pixels[i]) > threshold && brightness(img.pixels[i]) < threshold2) {
-      bright.pixels[i] = hue.pixels[i];
-    }
-    else {
-      bright.pixels[i] = color(0, 0, 0);
-    }
-  }/*
-  for(int i = 0; i < img.width * img.height; i++) {
-    if(hue(img.pixels[i]) > threshold && hue(img.pixels[i]) < threshold2) {
-      sature.pixels[i] = bright.pixels[i];
-    }
-    else {
-      sature.pixels[i] = color(0, 0, 0);
-    }
-  }*/
-  
   
   int[][] kernel = {{9, 12, 9},
                     {12, 15, 12},
                     {9, 12, 9}};
   
-  PImage gauss = convolute(hue, kernel);
+  PImage gauss = convolute(result, kernel);
   PImage sobel = sobel(gauss);
-  image(bright, 0, 0);
-  hough(sobel, 4);
-  //save("test.png");
-  thresholdBar.display();
-  thresholdBar.update();
-  thresholdBar2.display();
-  thresholdBar2.update();
+  PGraphics linesImg = createGraphics(img.width, img.height, P2D);
+  PImage hough = hough(sobel, 6, linesImg);
+  PImage lines = linesImg.get();
   
-  println("min : " + threshold + " max : " + threshold2);
+  img.resize(finalW, finalH);
+  lines.resize(finalW, finalH);
+  hough.resize(finalH, finalH);
+  sobel.resize(finalW, finalH);
+  image(img, 0, 0);
+  image(lines, 0, 0);
+  image(hough, finalW, 0);
+  image(sobel, finalW + finalH, 0);
 }
 
 PImage convolute(PImage img, int[][] kernel) {
@@ -113,6 +79,8 @@ PImage convolute(PImage img, int[][] kernel) {
   }
   return result;
 }
+
+
 
 PImage sobel(PImage img) {
   float b = 1;
@@ -147,7 +115,7 @@ PImage sobel(PImage img) {
         }
       }
       sum = sqrt(pow(sumH, 2) + pow(sumV, 2));
-      buffer[j * width + i] = sum;
+      buffer[j * img.width + i] = sum;
       if (sum > max) {
         max = sum;
       }
@@ -156,7 +124,7 @@ PImage sobel(PImage img) {
   
   for (int y = 2; y < img.height - 2; y++) {               // Skip top and bottom edges
     for (int x = 2; x < img.width - 2; x++) {              // Skip left and right
-      if (buffer[y * img.width + x] > (int)(max * 0.10f)) { // 30% of the max
+      if (buffer[y * img.width + x] > (int)(max * 0.25f)) { // 30% of the max
         result.pixels[y * img.width + x] = color(255);
       }
       else {
@@ -167,7 +135,7 @@ PImage sobel(PImage img) {
   return result;
 }
 
-void hough(PImage edgeImg, int nLines) {
+PImage hough(PImage edgeImg, int nLines, PGraphics linesImg) {
   ArrayList<Integer> bestCandidates = new ArrayList<Integer>();
   float discretizationStepsPhi = 0.06f;
   float discretizationStepsR = 2.5f;
@@ -199,11 +167,9 @@ void hough(PImage edgeImg, int nLines) {
     houghImg.pixels[i] = color(min(255, accumulator[i]));
   }
   
-  houghImg.resize(400, 400);
+  houghImg.resize(edgeImg.height, edgeImg.height);
   
   houghImg.updatePixels();
-  
-  //image(houghImg, 0, 0);
   
   int minVotes = 200;
   
@@ -238,9 +204,10 @@ void hough(PImage edgeImg, int nLines) {
       }
     }
   }
-
   
   Collections.sort(bestCandidates, new HoughComparator(accumulator));
+  
+  linesImg.beginDraw();
   
   for (int i = 0; i < Math.min(nLines, bestCandidates.size()); i++) {
     int idx = bestCandidates.get(i);
@@ -258,26 +225,28 @@ void hough(PImage edgeImg, int nLines) {
     int y3 = edgeImg.width;
     int x3 = (int) (-(y3 - r / sin(phi)) * (sin(phi) / cos(phi)));
 
-    stroke(204,102,0);
+    linesImg.stroke(204,102,0);
     if (y0 > 0) {
       if (x1 > 0)
-        line(x0, y0, x1, y1);
+        linesImg.line(x0, y0, x1, y1);
       else if (y2 > 0)
-        line(x0, y0, x2, y2);
+        linesImg.line(x0, y0, x2, y2);
       else
-        line(x0, y0, x3, y3);
+        linesImg.line(x0, y0, x3, y3);
     }
     else {
       if (x1 > 0) {
         if (y2 > 0)
-          line(x1, y1, x2, y2);
+          linesImg.line(x1, y1, x2, y2);
         else
-          line(x1, y1, x3, y3);
+          linesImg.line(x1, y1, x3, y3);
       }
       else 
-        line(x2, y2, x3, y3);
+        linesImg.line(x2, y2, x3, y3);
     }
   }
+  
+  linesImg.endDraw();
   
   ArrayList<PVector> vectors = new ArrayList<PVector>();
   
@@ -290,10 +259,12 @@ void hough(PImage edgeImg, int nLines) {
     vectors.add(new PVector((int) (r * Math.cos(phi)), (int) (r * Math.sin(phi))));
   }
   
-  getIntersections(vectors);
+  getIntersections(vectors, linesImg);
+  return houghImg;
 }
 
-ArrayList<PVector> getIntersections(List<PVector> lines) {
+ArrayList<PVector> getIntersections(List<PVector> lines, PGraphics linesImg) {
+  linesImg.beginDraw();
   ArrayList<PVector> intersections = new ArrayList<PVector>();
   for (int i = 0; i < lines.size() - 1; i++) {
     PVector line1 = lines.get(i);
@@ -309,9 +280,10 @@ ArrayList<PVector> getIntersections(List<PVector> lines) {
       
       intersections.add(new PVector(x, y));
       
-      fill(255, 128, 0);
-      ellipse(x, y, 10, 10);
+      linesImg.fill(255, 128, 0);
+      linesImg.ellipse(x, y, 10, 10);
     }
   }
+  linesImg.endDraw();
   return intersections;
 }

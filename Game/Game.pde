@@ -36,9 +36,9 @@ int camY = -400;
 int camZ = 500;
 
 //Directional light direction
-final int dLightX = 200; 
-final int dLightY = 200;
-final int dLightZ = 200;
+final int dLightR = 200; 
+final int dLightG = 200;
+final int dLightB = 200;
 
 //Ambient light color
 final int aLightR = 102;
@@ -145,7 +145,7 @@ void draw() {
   pushMatrix();
   perspective();
   camera(camX, camY, camZ, 0, 0, 0, 0, 1, 0);
-  directionalLight(dLightX, dLightY, dLightZ, 0, 1, 0);
+  directionalLight(dLightR, dLightG, dLightB, 0, 1, 0);
   ambientLight(aLightR, aLightG, aLightB);
   background(255, 255, 255);
   axes.dessine();
