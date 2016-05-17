@@ -1,37 +1,105 @@
-float depth = 500;
-float rx = 0;
-float rz = 0;
-float minAngle = -PI / 3;
-float maxAngle = PI / 3;
-float gameW = 300;
-float gameH = 300;
-float gameT = 6;
-float ballRadius = 10;
-float boardFactor = 1;
-ArrayList<PVector> vec = new ArrayList<PVector>();
-float radius = 25;
-int winW = 1200;
-int winH = 720;
+//Board tilt properties
+final float minAngle = -PI / 3;
+final float maxAngle = PI / 3;
+
+//Board properties
+final float gameW = 300;
+final float gameH = 300;
+final float gameT = 6;
+final int border = 2;
+
+//Ball properties
+final float ballRadius = 10;
+
+//Cylinder properties
+final float radius = 25;
+
+//Window Properties
+final int winW = 1200;
+final int winH = 720;
+
+//Game state variables
 boolean placeMode = false;
 boolean debugMode = false;
-int axeDist = 15;
-int axeSize = 10;
-int border = 2;
+float rx = 0;
+float rz = 0;
+float boardFactor = 1;
+ArrayList<PVector> vec = new ArrayList<PVector>();
+
+//Debug axes properties
+final int axeDist = 15;
+final int axeSize = 10;
+
+//Camera start position
 int camX = 0;
 int camY = -400;
 int camZ = 500;
-int hudH = 150;
-int hudR = 255;
-int hudG = 114;
-int hudB = 0;
-int hudPadding = 10;
-int hudElemH = hudH - 2 * hudPadding;
-int scoreW = 100;
-int tdX = hudPadding;
-int scoreX = tdX + hudElemH + hudPadding;
-int chartX = scoreX + scoreW + hudPadding;
-int chartW = winW - chartX - hudPadding;
 
+//Directional light direction
+final int dLightX = 200; 
+final int dLightY = 200;
+final int dLightZ = 200;
+
+//Ambient light color
+final int aLightR = 102;
+final int aLightG = 102;
+final int aLightB = 102;
+
+//Height of HUD panel
+final int hudH = winH / 5;
+
+//Padding between HUD elements
+final int hudPadding = 10;
+
+//Height of HUD elements
+final int hudElemH = hudH - 2 * hudPadding;
+
+//Position of minimap
+final int tdX = hudPadding;
+
+//Width of minimap
+final int tdW = hudElemH;
+
+//Position of score table
+final int scoreX = tdX + hudElemH + hudPadding;
+
+//Width of score table
+final int scoreW = 100;
+
+//Position of score chart
+final int chartX = scoreX + scoreW + hudPadding;
+
+//Width of score chart
+final int chartW = winW - chartX - hudPadding;
+
+//Properties of the score table
+final int scoreBorder = 2;
+final int scorePadding = 5;
+final int scoretextPadding = 2;
+
+//Colors for the 3D assets
+final int backgroundColor = #FFFFFF;
+final int boardColor = #A0FF80;
+final int ballColor = #F0F0F0;
+final int cylColor = #804000;
+
+//Colors for the 2D assets
+final int hudColor = #C06000;
+
+final int mapBackColor = #A0FF80;
+final int mapBallColor = #F0F0F0;
+final int mapTraceColor = #FFFFFF;
+final int mapCylColor = #804000;
+
+final int scoreBorderColor = #FFFFFF;
+final int scoreBackColor = #000000;
+final int scoreTextColor = #FFFFFF;
+
+final int chartBackColor = #FFFFFF;
+final int chartSideColor = #C0C0C0;
+final int chartTextColor = #202020;
+
+//Object declarations
 Mover mover;
 Cylinder cylinder;
 Axes axes;
@@ -47,39 +115,46 @@ void settings() {
 
 void setup () {
   noStroke();
-  mover = new Mover(gameW, gameH, ballRadius);
-  axes = new Axes(gameW, gameH, axeSize, axeDist);
-  plate = new Plate(gameW, gameH, gameT, 2 * ballRadius + gameT / 2, border);
-  hud = new HUD((int) winW, hudH, 0, winH - hudH, hudR, hudG, hudB);
-  hudTD = new HUDTopDown(hudElemH, hudElemH, gameW, gameH, ballRadius, radius, mover, vec);
-  hud.addAsset(hudTD, tdX, hudPadding);
-  hudScore = new HUDScore(scoreW, hudElemH, mover);
-  hud.addAsset(hudScore, scoreX, hudPadding);
-  hudChart = new HUDChart(chartW, hudElemH, 20, hudPadding, 2, 200, 20, mover);
-  hud.addAsset(hudChart, chartX, hudPadding);
   
-  /*hudTD = new HUDTopDown(hudElemH, hudElemH, gameW, gameH, ballRadius, radius, mover, vec);
+  //Setup mover
+  mover = new Mover(gameW, gameH, ballRadius, ballColor);
+  
+  //Setup debug axes
+  axes = new Axes(gameW, gameH, axeSize, axeDist);
+  
+  //Setup plate
+  plate = new Plate(gameW, gameH, gameT, 2 * ballRadius + gameT / 2, border, boardColor);
+  
+  //Setup hud panel
+  hud = new HUD((int) winW, hudH, 0, winH - hudH, hudColor);
+  
+  //Setup top-down minimap
+  hudTD = new HUDTopDown(tdW, hudElemH, gameW, gameH, ballRadius, radius, mover, vec, mapBackColor, mapBallColor, mapTraceColor, mapCylColor);
   hud.addAsset(hudTD, tdX, hudPadding);
-  hudScore = new HUDScore(scoreW, hudElemH, mover);
+  
+  //Setup score table
+  hudScore = new HUDScore(scoreW, hudElemH, mover, scoreBorder, scorePadding, scoretextPadding, scoreBorderColor, scoreBackColor, scoreTextColor);
   hud.addAsset(hudScore, scoreX, hudPadding);
-  hudChart = new HUDChart(chartW, hudElemH, 20, 20, 2, 200, 20, mover);
-  hud.addAsset(hudChart, chartX, hudPadding);*/
+  
+  //Setup score chart
+  hudChart = new HUDChart(chartW, hudElemH, 20, hudPadding, 2, 200, 20, mover, chartBackColor, chartSideColor, chartTextColor);
+  hud.addAsset(hudChart, chartX, hudPadding);
 }
 
 void draw() {
   pushMatrix();
   perspective();
   camera(camX, camY, camZ, 0, 0, 0, 0, 1, 0);
-  directionalLight(50, 100, 125, 0, 1, 0);
-  ambientLight(102, 102, 102);
-  background(200);
+  directionalLight(dLightX, dLightY, dLightZ, 0, 1, 0);
+  ambientLight(aLightR, aLightG, aLightB);
+  background(255, 255, 255);
   axes.dessine();
   rotateZ(rz);
   rotateX(-rx);
   plate.dessine();
 
   for (int i = 0; i < vec.size(); i++) {
-    cylinder = new Cylinder(vec.get(i).x, vec.get(i).y, radius, 50, 40);
+    cylinder = new Cylinder(vec.get(i).x, vec.get(i).y, radius, 50, 40, cylColor);
     cylinder.param();
     cylinder.dessine();
   }
@@ -168,7 +243,7 @@ void placeMode() {
     ortho();
     background(200);
     translate(1, 0, 0);
-    fill(200);
+    fill(boardColor);
     box(1, gameH, gameW);
     noFill();
   }
@@ -192,4 +267,16 @@ float intervalTest(float value, float min, float max) {
   if (value < tmpMin) return tmpMin;
   if (value > tmpMax) return tmpMax;
   return value;
+}
+
+String correctScore(PGraphics graph, int i, int maxWidth) {
+  if (i == 0) {
+    return "0";
+  }
+  else if (graph.textWidth("-" + Integer.toString((int) Math.abs(i))) > maxWidth) {
+    int temp = (int) Math.log10(Math.abs(i));
+    double power = i / Math.pow(10, temp);
+    return Double.toString(power) + 'e' + Integer.toString(temp);
+  }
+  else return Integer.toString(i);
 }

@@ -1,40 +1,72 @@
 class HUDScore extends HUDAsset {
-  int chartW, chartH;
-  Mover mover;
-  int score, lastScore;
+  int chartW, chartH, zoneW, zoneH, border, padding, textPadding, textSize;
+  String totalTitle, totalValue, velTitle, velValue, lastTitle, lastValue;
+  int borderColor, backColor, textColor;
   PGraphics back, text;
-  String totalTitle, totalValue, velTitle, velValue, lastTitle, lastValue, finalText;
-  PFont f;
+  PFont font;
+  Mover mover;
   
-  HUDScore(int chartW, int chartH, Mover mover) {
+  HUDScore(int chartW, int chartH, Mover mover, int border, int padding, int textPadding, int borderColor, int backColor, int textColor) {
     this.chartW = chartW;
     this.chartH = chartH;
     this.mover = mover;
+    this.border = border;
+    this.padding = padding;
+    this.textPadding = textPadding;
+    this.borderColor = borderColor;
+    this.backColor = backColor;
+    this.textColor = textColor;
+    
+    zoneW = chartW - 2 * border;
+    zoneH = chartH - 2 * border;
     
     back = createGraphics(chartW, chartH, P2D);
+    text = createGraphics(zoneW, zoneH, P2D);
     
     back.beginDraw();
-    back.background(0);
+    back.background(borderColor);
+    back.fill(backColor);
+    back.noStroke();
+    back.rect(border, border, zoneW, zoneH);
     back.noFill();
-    back.stroke(255);
-    back.strokeWeight(3);
-    back.rect(1, 1, chartW - 2, chartH - 1);
     back.endDraw();
     
-    totalTitle = "Total Score :\n";
-    velTitle = "Velocity :\n";
-    lastTitle = "Last Score :\n";
+    text.beginDraw();
+    text.fill(textColor);
+    text.endDraw();
+    
+    totalTitle = "Total Score :";
+    velTitle = "Velocity :";
+    lastTitle = "Last Score :";
   }
   
   void dessine(float x, float y) {
+    int space = textSize + textPadding;
+    int position = space;
+    textSize = (zoneH - 4 * padding - 6 * textPadding) / 6;
+    font = createFont("Courier", textSize, true);
+    text.textFont(font);
+    
+    totalValue = correctScore(text, mover.getScore(), chartW - 2 * padding);
+    velValue = correctScore(text, mover.getVelocity(), chartW - 2 * padding);
+    lastValue = correctScore(text, mover.getLastScore(), chartW - 2 * padding);
+    
+    text.beginDraw();
+    text.clear();
+    text.text(totalTitle, textPadding, position);
+    position += space;
+    text.text(totalValue, textPadding, position);
+    position += space + padding;
+    text.text(velTitle, textPadding, position);
+    position += space;
+    text.text(velValue, textPadding, position);
+    position += space + padding;
+    text.text(lastTitle, textPadding, position);
+    position += space;
+    text.text(lastValue, textPadding, position);
+    text.endDraw();
+    
     image(back, x, y);
-    totalValue = Integer.toString(mover.getScore());
-    velValue = Integer.toString(mover.getVelocity());
-    lastValue = Integer.toString(mover.getLastScore());
-    finalText = totalTitle + totalValue + "\n\n"
-                + velTitle + velValue + "\n\n"
-                + lastTitle + lastValue;
-    f = createFont("Courier", 16, true);
-    text(finalText, x + 10, y + 20);
+    image(text, x + border, y + border);
   }
 }

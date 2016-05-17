@@ -3,13 +3,15 @@ class Cylinder {
   int res;
   PShape cylinder = new PShape();
   PShape cylinderHat = new PShape();
+  int cylColor;
   
-  Cylinder(float x, float y, float radius, float cylinderHeight, int res) {
+  Cylinder(float x, float y, float radius, float cylinderHeight, int res, int cylColor) {
     this.x = x;
     this.y = y;
     this.radius = radius;
     this.cylinderHeight = cylinderHeight;
     this.res = res;
+    this.cylColor = cylColor;
   }
   
   float getX() {
@@ -28,7 +30,7 @@ class Cylinder {
     float angle;
     float[] x = new float[res + 1];
     float[] z = new float[res + 1];
-    fill(100);
+    fill(cylColor);
     
     //get the x and y position on a circle for all the sides
     for (int i = 0; i < x.length; i++) {

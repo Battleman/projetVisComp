@@ -1,18 +1,12 @@
 class HUDTopDown extends HUDAsset {
-  int plateW;
-  int plateH;
-  float tempX, tempY;
-  float ballRadius;
-  float cylRadius;
-  float ratio;
+  int plateW, plateH;
+  float tempX, tempY, ballRadius, cylRadius, ratio;
   Mover mover;
   ArrayList<PVector> cylinders;
-  PGraphics obstacles;
-  PGraphics ball;
-  PGraphics trace;
-  PGraphics back;
+  PGraphics obstacles, ball, trace, back;
+  color backColor, ballColor, traceColor, cylColor;
   
-  HUDTopDown(int plateW, int plateH, float origW, float origH, float ballRadius, float cylRadius, Mover mover, ArrayList<PVector> cylinders) {
+  HUDTopDown(int plateW, int plateH, float origW, float origH, float ballRadius, float cylRadius, Mover mover, ArrayList<PVector> cylinders, color backColor, color ballColor, color traceColor, color cylColor) {
     this.plateW = plateW;
     this.plateH = plateH;
     this.ratio = plateW / origW;
@@ -20,6 +14,10 @@ class HUDTopDown extends HUDAsset {
     this.cylRadius = cylRadius * ratio;
     this.mover = mover;
     this.cylinders = cylinders;
+    this.backColor = backColor;
+    this.ballColor = ballColor;
+    this.traceColor = traceColor;
+    this.cylColor = cylColor;
     
     obstacles = createGraphics(plateW, plateH, P2D);
     ball = createGraphics(plateW, plateH, P2D);
@@ -27,17 +25,17 @@ class HUDTopDown extends HUDAsset {
     back = createGraphics(plateW, plateH, P2D);
     
     trace.beginDraw();
-    trace.fill(255, 0, 0);
+    trace.fill(traceColor);
     trace.noStroke();
     trace.endDraw();
     
     ball.beginDraw();
-    ball.fill(255, 255, 255);
+    ball.fill(ballColor);
     ball.endDraw();
     
     //Set background color
     back.beginDraw();
-    back.background(0);
+    back.background(backColor);
     back.endDraw();
   }
   
@@ -55,7 +53,7 @@ class HUDTopDown extends HUDAsset {
     ball.endDraw();
     
     obstacles.beginDraw();
-    obstacles.fill(#ffff00);
+    obstacles.fill(cylColor);
     for (int i = 0; i < cylinders.size(); i++) {
       tempX = plateW / 2 + cylinders.get(i).x * ratio;
       tempY = plateH / 2 + cylinders.get(i).y * ratio;

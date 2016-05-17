@@ -1,12 +1,13 @@
 class HUDChart extends HUDAsset {
   int scoreW, chartW, chartH, totalW, totalH, padding, start, count, min, max, threshold, amount, barHeight, distance;
-  int[] scores;
-  double visible, oldVisible;
-  Mover mover;
   PGraphics back, grid, data, text;
+  int backColor, sideColor, textColor;
+  double visible, oldVisible;
+  int[] scores;
+  Mover mover;
   HScrollbar bar;
 
-  HUDChart(int totalW, int totalH, int barHeight, int distance, int padding, int amount, int threshold, Mover mover) {
+  HUDChart(int totalW, int totalH, int barHeight, int distance, int padding, int amount, int threshold, Mover mover, int backColor, int sideColor, int textColor) {
     this.totalW = totalW;
     this.totalH = totalH;
     this.padding = padding;
@@ -15,6 +16,9 @@ class HUDChart extends HUDAsset {
     this.barHeight = barHeight;
     this.distance = distance;
     this.amount = amount;
+    this.backColor = backColor;
+    this.sideColor = sideColor;
+    this.textColor = textColor;
     
     scoreW = 60;
     chartW = totalW - scoreW;
@@ -33,8 +37,12 @@ class HUDChart extends HUDAsset {
     text = createGraphics(scoreW, chartH, P2D);
     
     back.beginDraw();
-    back.background(255);
+    back.background(backColor);
     back.endDraw();
+    
+    text.beginDraw();
+    text.fill(textColor);
+    text.endDraw();
     
     bar = new HScrollbar(totalW, barHeight, 50, 1);
     
@@ -138,7 +146,7 @@ class HUDChart extends HUDAsset {
     
     text.beginDraw();
     text.clear();
-    text.background(150);
+    text.background(sideColor);
     text.textSize(policeSize);
     text.endDraw();
     
@@ -153,18 +161,6 @@ class HUDChart extends HUDAsset {
       text.text(correctScore(text, i * space, scoreW - 2 * scorePadding), scorePadding, Math.max(policeSize + 3, Math.min(chartH - 3, temp + policeSize / 2)));
       text.endDraw();
     }
-  }
-  
-  String correctScore(PGraphics graph, int i, int maxWidth) {
-    if (i == 0) {
-      return "0";
-    }
-    else if (graph.textWidth("-" + Integer.toString((int) Math.abs(i))) > maxWidth) {
-      int temp = (int) Math.log10(Math.abs(i));
-      double power = i / Math.pow(10, temp);
-      return Double.toString(power) + 'e' + Integer.toString(temp);
-    }
-    else return Integer.toString(i);
   }
   
   boolean full() {

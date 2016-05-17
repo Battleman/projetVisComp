@@ -1,26 +1,22 @@
 class HUD {
-  int hudW;
-  int hudH;
+  int hudW, hudH;
   float x, y;
-  int r, g, b;
+  int hudColor;
   PGraphics myHud;
   ArrayList<HUDAsset> assets;
-  ArrayList<Float> assetsX;
-  ArrayList<Float> assetsY;
+  ArrayList<Float> assetsX, assetsY;
   
-  HUD(int hudW, int hudH, float x, float y, int r, int g, int b) {
+  HUD(int hudW, int hudH, float x, float y, int hudColor) {
     this.hudW = hudW;
     this.hudH = hudH;
     this.x = x;
     this.y = y;
-    this.r = r;
-    this.g = g;
-    this.b = b;
+    this.hudColor = hudColor;
     
     myHud = createGraphics(hudW, hudH, P2D);
     
     myHud.beginDraw();
-    myHud.background(r, g, b);
+    myHud.background(hudColor);
     myHud.endDraw();
     
     assets = new ArrayList<HUDAsset>();

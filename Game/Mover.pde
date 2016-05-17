@@ -1,36 +1,30 @@
 class Mover {
-  
-  PVector location;
-  PVector velocity;
-  PVector force;
-  PVector friction;
-  float gravityConstant;
-  float normalForce;
-  float mu;
-  float frictionMagnitude;
-  float width0;
-  float height0;
-  float ballRadius;
-  float bounceCoeff;
+  PVector location, velocity, force, friction;
+  float gravityConstant, normalForce, mu, frictionMagnitude, width0, height0, ballRadius, bounceCoeff;
   int score, lastScore;
+  color ballColor;
   ArrayList<PVector> vec;
   boolean hit;
 
-  Mover(float width0, float height0, float ballRadius) {
+  Mover(float width0, float height0, float ballRadius, color ballColor) {
+    this.width0 = width0;
+    this.height0 = height0;
+    this.ballRadius = ballRadius;
+    this.ballColor = ballColor;
+    
     location = new PVector(0, 0);
     velocity = new PVector(0, 0);
     force = new PVector(0, 0);
     friction = new PVector(0, 0);
+    
     gravityConstant = 0.5;
     normalForce = 1;
     mu = 0.01;
     frictionMagnitude = normalForce * mu;
     bounceCoeff = 0.9;
+    
     score = 0;
     hit = false;
-    this.width0 = width0;
-    this.height0 = height0;
-    this.ballRadius = ballRadius;
   }
   
   PVector getPos() {
@@ -123,7 +117,7 @@ class Mover {
   }
   
   void dessine() {
-    fill(255, 255, 255);
+    fill(ballColor);
     translate(mover.location.x, -13, mover.location.y);
     mover.compute(rx, rz);
     mover.update();
@@ -139,7 +133,7 @@ class Mover {
       if (location.dist(temp) < radius + ballRadius) {
         PVector n = new PVector(location.x - temp.x, location.y - temp.y);
         PVector unit = n.copy().normalize();
-        location = temp.copy().add(unit.copy().mult(n.mag() + ballRadius));
+        location = temp.copy().add(unit.copy().mult(n.mag()));
         velocity.sub(unit.mult(2 * (velocity.copy().dot(unit)))).mult(bounceCoeff);
         addScore(true);
       }

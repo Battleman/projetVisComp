@@ -94,13 +94,13 @@ class HScrollbar extends HUDAsset {
     sliderPosition = newSliderPosition;
     update(x, y);
     bar.beginDraw();
-    bar.fill(204);
+    bar.fill(200);
     bar.rect(0, 0, barWidth, barHeight);
     if (mouseOver) {
-      bar.fill(0, 0, 0);
+      bar.fill(0);
     }
     else {
-      bar.fill(102, 102, 102);
+      bar.fill(100);
     }
     bar.rect(sliderPosition - sliderW / 2, padding, sliderW, sliderH);
     bar.endDraw();
