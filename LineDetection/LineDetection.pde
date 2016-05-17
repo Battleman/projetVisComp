@@ -2,8 +2,8 @@ import processing.video.*;
 import java.util.Collections;
 import java.util.List;
 
-Capture cam;
-PImage img;
+PImage img, result, gauss, sobel, hough, lines;
+PGraphics linesImg;
 int finalW = 400, finalH = 300;
 HScrollbar thresholdBar, thresholdBar2;
 
@@ -11,19 +11,21 @@ void settings() {
   size(2 * finalW + finalH, finalH, P2D);
 }
 
-void setup() {}
+void setup() {
+  noLoop();
+}
 
 void draw() {
-  img = loadImage("board3.jpg");
-  background(0);
+  int[][] kernel = {{9, 12, 9},
+                    {12, 15, 12},
+                    {9, 12, 9}};
   
-  PImage result = createImage(img.width, img.height, RGB);
-  
-  println(img.width + img.height);
+  img = loadImage("board1.jpg");
+  result = createImage(img.width, img.height, RGB);
   
   for(int i = 0; i < img.width * img.height; i++) {
     int temp = img.pixels[i];
-    if (hue(temp) > 100 && hue(temp) < 140 && brightness(temp) > 60
+    if (hue(temp) > 100 && hue(temp) < 140 && brightness(temp) > 30
         && brightness(temp) < 160 && saturation(temp) > 100) {
       result.pixels[i] = color(255);
     }
@@ -32,16 +34,13 @@ void draw() {
     }
   }
   
-  int[][] kernel = {{9, 12, 9},
-                    {12, 15, 12},
-                    {9, 12, 9}};
+  gauss = convolute(result, kernel);
+  sobel = sobel(gauss);
+  linesImg = createGraphics(img.width, img.height, P2D);
+  hough = hough(sobel, 4, linesImg);
+  lines = linesImg.get();
   
-  PImage gauss = convolute(result, kernel);
-  PImage sobel = sobel(gauss);
-  PGraphics linesImg = createGraphics(img.width, img.height, P2D);
-  PImage hough = hough(sobel, 6, linesImg);
-  PImage lines = linesImg.get();
-  
+  background(0);
   img.resize(finalW, finalH);
   lines.resize(finalW, finalH);
   hough.resize(finalH, finalH);
