@@ -230,7 +230,6 @@ void mouseClicked() {
     float mX = map(mouseX, 0, winW, (gameW - winW) / 2, (gameW + winW) / 2);
     float mY = map(mouseY, 0, winH, (gameH - winH) / 2, (gameH + winH) / 2);
     if (mX >= radius && mX <= gameW - radius && mY >= radius && mY <= gameH - radius) {
-      println(mX + ", " + mY);
       vec.add(new PVector(mX - gameW / 2, mY - gameH / 2));
     }
   }

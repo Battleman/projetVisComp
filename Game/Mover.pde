@@ -103,7 +103,7 @@ class Mover {
     if (sign) {
       temp = 1;
     }
-    lastScore = (int) (200000 * Math.random()) - 100000;//getVelocity() * temp;
+    lastScore = getVelocity() * temp;
     
     if (lastScore > 0 && score + lastScore < score) {
       score = Integer.MAX_VALUE;
@@ -133,7 +133,7 @@ class Mover {
       if (location.dist(temp) < radius + ballRadius) {
         PVector n = new PVector(location.x - temp.x, location.y - temp.y);
         PVector unit = n.copy().normalize();
-        location = temp.copy().add(unit.copy().mult(n.mag()));
+        location = temp.copy().add(unit.copy().mult(radius + ballRadius));
         velocity.sub(unit.mult(2 * (velocity.copy().dot(unit)))).mult(bounceCoeff);
         addScore(true);
       }
