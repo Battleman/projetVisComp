@@ -1,48 +1,42 @@
-class HScrollbar extends HUDAsset {
+class HScrollbar {
   float barWidth;  //Bar's width in pixels
   float barHeight; //Bar's height in pixels
+  float xPosition;  //Bar's x position in pixels
+  float yPosition;  //Bar's y position in pixels
   
   float sliderPosition, newSliderPosition;    //Position of slider
   float sliderPositionMin, sliderPositionMax; //Max and min values of slider
-  float sliderW;
-  float sliderH;
-  float padding;
+  float sliderValue;
   
   boolean mouseOver;  //Is the mouse over the slider?
   boolean locked;     //Is the mouse clicking and dragging the slider now?
-  
-  PGraphics bar;
 
   /**
    * @brief Creates a new horizontal scrollbar
    * 
+   * @param x The x position of the top left corner of the bar in pixels
+   * @param y The y position of the top left corner of the bar in pixels
    * @param w The width of the bar in pixels
    * @param h The height of the bar in pixels
    */
-  HScrollbar(float barWidth, float barHeight, float sliderW, float padding) {
-    this.barWidth = barWidth;
-    this.barHeight = barHeight;
-    this.sliderW = sliderW;
-    this.sliderH = barHeight - 2 * padding;
-    this.padding = padding;
+  HScrollbar (float x, float y, float w, float h) {
+    barWidth = w;
+    barHeight = h;
+    xPosition = x;
+    yPosition = y;
     
-    bar = createGraphics((int) barWidth, (int) barHeight, P2D);
-    bar.beginDraw();
-    bar.noStroke();
-    bar.endDraw();
-    
-    sliderPosition = barWidth / 2;
+    sliderPosition = xPosition + barWidth/2 - barHeight/2;
     newSliderPosition = sliderPosition;
     
-    sliderPositionMin = padding + sliderW / 2;
-    sliderPositionMax = barWidth - sliderPositionMin;
+    sliderPositionMin = xPosition;
+    sliderPositionMax = xPosition + barWidth - barHeight;
   }
 
   /**
    * @brief Updates the state of the scrollbar according to the mouse movement
    */
-  void update(float x, float y) {
-    if (isMouseOver(x, y)) {
+  void update() {
+    if (isMouseOver()) {
       mouseOver = true;
     }
     else {
@@ -55,7 +49,10 @@ class HScrollbar extends HUDAsset {
       locked = false;
     }
     if (locked) {
-      newSliderPosition = constrain(mouseX - x, sliderPositionMin, sliderPositionMax);
+      newSliderPosition = constrain(mouseX - barHeight/2, sliderPositionMin, sliderPositionMax);
+    }
+    if (abs(newSliderPosition - sliderPosition) > 1) {
+      sliderPosition = sliderPosition + (newSliderPosition - sliderPosition);
     }
   }
 
@@ -77,9 +74,9 @@ class HScrollbar extends HUDAsset {
    *
    * @return Whether the mouse is hovering the scrollbar
    */
-  boolean isMouseOver(float x, float y) {
-    if (mouseX > x && mouseX < x + barWidth &&
-      mouseY > y && mouseY < y + barHeight) {
+  boolean isMouseOver() {
+    if (mouseX > xPosition && mouseX < xPosition+barWidth &&
+      mouseY > yPosition && mouseY < yPosition+barHeight) {
       return true;
     }
     else {
@@ -90,22 +87,17 @@ class HScrollbar extends HUDAsset {
   /**
    * @brief Draws the scrollbar in its current state
    */ 
-  void dessine(float x, float y) {
-    sliderPosition = newSliderPosition;
-    update(x, y);
-    bar.beginDraw();
-    bar.fill(200);
-    bar.rect(0, 0, barWidth, barHeight);
-    if (mouseOver) {
-      bar.fill(0);
+  void display() {
+    noStroke();
+    fill(204);
+    rect(xPosition, yPosition, barWidth, barHeight);
+    if (mouseOver || locked) {
+      fill(0, 0, 0);
     }
     else {
-      bar.fill(100);
+      fill(102, 102, 102);
     }
-    bar.rect(sliderPosition - sliderW / 2, padding, sliderW, sliderH);
-    bar.endDraw();
-    
-    image(bar, x, y);
+    rect(sliderPosition, yPosition, barHeight, barHeight);
   }
 
   /**
@@ -114,6 +106,6 @@ class HScrollbar extends HUDAsset {
    * @return The slider position in the interval [0,1] corresponding to [leftmost position, rightmost position]
    */
   float getPos() {
-    return (sliderPosition - sliderPositionMin) / (sliderPositionMax - sliderPositionMin);
+    return (sliderPosition - xPosition)/(barWidth - barHeight);
   }
 }
