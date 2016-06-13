@@ -5,7 +5,7 @@ import java.util.Random;
 
 class LineDetection {
   boolean valid = false;
-  PImage result, gauss, sobel, linesFinal, bw;
+  PImage img, result, gauss, sobel, linesFinal, bw;
   PGraphics linesImg;
   TwoDThreeD transformer;
   List<PVector> vertices = new ArrayList<PVector>();
@@ -15,13 +15,12 @@ class LineDetection {
                   {12, 15, 12},
                   {9, 12, 9}};
   
-  LineDetection(int finalW, int finalH) {
+  LineDetection() {
     transformer = new TwoDThreeD();
-    this.finalW = finalW;
-    this.finalH = finalH;
   }
   
   Boolean drawLineDetec(PImage img) {
+    this.img = img;
     result = createImage(img.width, img.height, RGB);
     
     for(int i = 0; i < img.width * img.height; i++) {
@@ -53,8 +52,6 @@ class LineDetection {
     hough(sobel, 6, linesImg, lines); 
     
     linesFinal = linesImg.get();
-    linesFinal.resize(finalW, finalH);
-    sobel.resize(finalW, finalH);
     
     if (vertices.size() > 0) {
       position = transformer.get3DRotations(vertices);

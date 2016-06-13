@@ -1,10 +1,13 @@
 class HUDLineImage extends HUDAsset {
   PGraphics temp;
-  PImage image;
+  PImage image, visuals, lines;
   LineDetection lineDetec;
+  int imgWidth, imgHeight;
   
   HUDLineImage(LineDetection lineDetec, int imgWidth, int imgHeight) {
     this.lineDetec = lineDetec;
+    this.imgWidth = imgWidth;
+    this.imgHeight = imgHeight;
     temp = createGraphics(imgWidth, imgHeight, P2D);
     temp.beginDraw();
     temp.background(0);
@@ -16,8 +19,14 @@ class HUDLineImage extends HUDAsset {
     image(image, x, y);
     
     if (lineDetec.valid) {
-      image(lineDetec.sobel, x, y);
-      image(lineDetec.linesFinal, x, y);
+      visuals = lineDetec.img;
+      visuals.resize(imgWidth, imgHeight);
+    
+      lines = lineDetec.linesFinal;
+      lines.resize(imgWidth, imgHeight);
+      
+      image(visuals, x, y);
+      image(lines, x, y);
     }
   }
 }

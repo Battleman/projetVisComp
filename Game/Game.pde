@@ -126,7 +126,7 @@ void settings() {
 void setup () {
   noStroke();
 
-  lineDetec = new LineDetection(lineW, hudElemH);
+  lineDetec = new LineDetection();
   
   //Setup mover
   mover = new Mover(gameW, gameH, ballRadius, ballColor);
