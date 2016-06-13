@@ -2,11 +2,11 @@ class HUDTopDown extends HUDAsset {
   int plateW, plateH;
   float tempX, tempY, ballRadius, cylRadius, ratio;
   Mover mover;
-  ArrayList<PVector> cylinders;
+  List<PVector> cylinders;
   PGraphics obstacles, ball, trace, back;
   color backColor, ballColor, traceColor, cylColor;
   
-  HUDTopDown(int plateW, int plateH, float origW, float origH, float ballRadius, float cylRadius, Mover mover, ArrayList<PVector> cylinders, color backColor, color ballColor, color traceColor, color cylColor) {
+  HUDTopDown(int plateW, int plateH, float origW, float origH, float ballRadius, float cylRadius, Mover mover, List<PVector> cylinders, color backColor, color ballColor, color traceColor, color cylColor) {
     this.plateW = plateW;
     this.plateH = plateH;
     this.ratio = plateW / origW;

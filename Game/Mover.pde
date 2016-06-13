@@ -3,7 +3,7 @@ class Mover {
   float gravityConstant, normalForce, mu, frictionMagnitude, width0, height0, ballRadius, bounceCoeff;
   int score, lastScore;
   color ballColor;
-  ArrayList<PVector> vec;
+  List<PVector> vec;
   boolean hit;
 
   Mover(float width0, float height0, float ballRadius, color ballColor) {
@@ -127,7 +127,7 @@ class Mover {
     noFill();
   }
   
-  void checkCylinderCollision(ArrayList<PVector> vec, float radius) {
+  void checkCylinderCollision(List<PVector> vec, float radius) {
     for (int i = 0; i < vec.size(); i++) {
       PVector temp = vec.get(i);
       if (location.dist(temp) < radius + ballRadius) {

@@ -24,7 +24,8 @@ boolean debugMode = false;
 float rx = 0;
 float rz = 0;
 float boardFactor = 1;
-ArrayList<PVector> vec = new ArrayList<PVector>();
+List<PVector> vec = new ArrayList<PVector>();
+PVector position;
 
 //Debug axes properties
 final int axeDist = 15;
@@ -108,6 +109,7 @@ HUD hud;
 HUDTopDown hudTD;
 HUDScore hudScore;
 HUDChart hudChart;
+LineDetection lineDetec;
 
 void settings() {
   size(winW, winH, P3D);
@@ -139,6 +141,8 @@ void setup () {
   //Setup score chart
   hudChart = new HUDChart(chartW, hudElemH, 20, hudPadding, 2, 200, 20, mover, chartBackColor, chartSideColor, chartTextColor);
   hud.addAsset(hudChart, chartX, hudPadding);
+
+  lineDetec = new LineDetection();
 }
 
 void draw() {
@@ -149,8 +153,9 @@ void draw() {
   ambientLight(aLightR, aLightG, aLightB);
   background(255, 255, 255);
   axes.dessine();
-  rotateZ(rz);
-  rotateX(-rx);
+  position = lineDetec.drawLineDetec();
+  rotateX(position.x - rx);
+  rotateZ(position.z + rz);
   plate.dessine();
 
   for (int i = 0; i < vec.size(); i++) {

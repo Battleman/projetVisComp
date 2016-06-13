@@ -3,8 +3,8 @@ class HUD {
   float x, y;
   int hudColor;
   PGraphics myHud;
-  ArrayList<HUDAsset> assets;
-  ArrayList<Float> assetsX, assetsY;
+  List<HUDAsset> assets;
+  List<Float> assetsX, assetsY;
   
   HUD(int hudW, int hudH, float x, float y, int hudColor) {
     this.hudW = hudW;
