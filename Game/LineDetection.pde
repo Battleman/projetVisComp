@@ -54,6 +54,7 @@ class LineDetection {
     
     linesFinal = linesImg.get();
     linesFinal.resize(finalW, finalH);
+    sobel.resize(finalW, finalH);
     
     if (vertices.size() > 0) {
       position = transformer.get3DRotations(vertices);

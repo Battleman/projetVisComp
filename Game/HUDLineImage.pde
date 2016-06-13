@@ -15,7 +15,8 @@ class HUDLineImage extends HUDAsset {
   void dessine(float x, float y) {
     image(image, x, y);
     
-    if(lineDetec.valid) {
+    if (lineDetec.valid) {
+      image(lineDetec.sobel, x, y);
       image(lineDetec.linesFinal, x, y);
     }
   }

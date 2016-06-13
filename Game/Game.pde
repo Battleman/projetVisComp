@@ -208,8 +208,6 @@ void draw() {
   hud.dessine();
 }
 
-void rotatePlate()
-
 void mouseDragged() {
   if (!placeMode && !hud.mouseOver()) {
     int tempX = pmouseY - mouseY;
