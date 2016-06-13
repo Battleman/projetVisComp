@@ -9,23 +9,21 @@ class QuadGraph {
   List<int[]> cycles = new ArrayList<int[]>();
   int[][] graph;
 
-  void build(List<PVector> lines, int width, int height) {
+  void build(List<PVector> lines, int imgWidth, int imgHeight) {
 
     int n = lines.size();
 
-    // The maximum possible number of edges is n * (n - 1)/2
-    graph = new int[n * (n - 1)/2][2];
+    // The maximum possible number of edges is n * (n - 1) / 2
+    graph = new int[n * (n - 1) / 2][2];
 
-    int idx =0;
+    int idx = 0;
 
-    for (int i = 0; i < lines.size(); i++) {
-      for (int j = i + 1; j < lines.size(); j++) {
-        if (intersect(lines.get(i), lines.get(j), width, height)) {
+    for (int i = 0; i < n; i++) {
+      for (int j = i + 1; j < n; j++) {
+        if (intersect(lines.get(i), lines.get(j), imgWidth, imgHeight)) {
 
-          // TODO
-          // fill the graph using intersect() to check if two lines are
-          // connected in the graph.
-
+          graph[idx][0] = i;
+          graph[idx][1] = j;
           idx++;
         }
       }
@@ -33,9 +31,9 @@ class QuadGraph {
   }
 
   /** Returns true if polar lines 1 and 2 intersect 
-   * inside an area of size (width, height)
+   * inside an area of size (imgWidth, imgHeight)
    */
-  boolean intersect(PVector line1, PVector line2, int width, int height) {
+  boolean intersect(PVector line1, PVector line2, int imgWidth, int imgHeight) {
 
     double sin_t1 = Math.sin(line1.y);
     double sin_t2 = Math.sin(line2.y);
@@ -49,7 +47,7 @@ class QuadGraph {
     int x = (int) ((r2 * sin_t1 - r1 * sin_t2) / denom);
     int y = (int) ((-r2 * cos_t1 + r1 * cos_t2) / denom);
 
-    if (0 <= x && 0 <= y && width >= x && height >= y)
+    if (0 <= x && 0 <= y && imgWidth >= x && imgHeight >= y)
       return true;
     else
       return false;
@@ -219,18 +217,18 @@ class QuadGraph {
    */
   boolean isConvex(PVector c1, PVector c2, PVector c3, PVector c4) {
 
-    PVector v21= PVector.sub(c1, c2);
-    PVector v32= PVector.sub(c2, c3);
-    PVector v43= PVector.sub(c3, c4);
-    PVector v14= PVector.sub(c4, c1);
+    PVector v21 = PVector.sub(c1, c2);
+    PVector v32 = PVector.sub(c2, c3);
+    PVector v43 = PVector.sub(c3, c4);
+    PVector v14 = PVector.sub(c4, c1);
 
-    float i1=v21.cross(v32).z;
-    float i2=v32.cross(v43).z;
-    float i3=v43.cross(v14).z;
-    float i4=v14.cross(v21).z;
+    float i1 = v21.cross(v32).z;
+    float i2 = v32.cross(v43).z;
+    float i3 = v43.cross(v14).z;
+    float i4 = v14.cross(v21).z;
 
-    if (   (i1>0 && i2>0 && i3>0 && i4>0) 
-      || (i1<0 && i2<0 && i3<0 && i4<0))
+    if ((i1 > 0 && i2 > 0 && i3 > 0 && i4 > 0) 
+      || (i1 < 0 && i2 < 0 && i3 < 0 && i4 < 0))
       return true;
     else 
     System.out.println("Eliminating non-convex quad");
@@ -241,14 +239,17 @@ class QuadGraph {
    */
   boolean validArea(PVector c1, PVector c2, PVector c3, PVector c4, float max_area, float min_area) {
 
-    float i1=c1.cross(c2).z;
-    float i2=c2.cross(c3).z;
-    float i3=c3.cross(c4).z;
-    float i4=c4.cross(c1).z;
+    PVector v21 = PVector.sub(c1, c2);
+    PVector v32 = PVector.sub(c2, c3);
+    PVector v43 = PVector.sub(c3, c4);
+    PVector v14 = PVector.sub(c4, c1);
+    
+    float i1 = v21.cross(v32).z;
+    float i2 = v32.cross(v43).z;
+    float i3 = v43.cross(v14).z;
+    float i4 = v14.cross(v21).z;
 
-    float area = Math.abs(0.5f * (i1 + i2 + i3 + i4));
-
-    //System.out.println(area);
+    float area = Math.abs(.5f * (i1 + i2 + i3 + i4));
 
     boolean valid = (area < max_area && area > min_area);
 
@@ -265,15 +266,15 @@ class QuadGraph {
     // cos(70deg) ~= 0.3
     float min_cos = 0.5f;
 
-    PVector v21= PVector.sub(c1, c2);
-    PVector v32= PVector.sub(c2, c3);
-    PVector v43= PVector.sub(c3, c4);
-    PVector v14= PVector.sub(c4, c1);
+    PVector v21 = PVector.sub(c1, c2);
+    PVector v32 = PVector.sub(c2, c3);
+    PVector v43 = PVector.sub(c3, c4);
+    PVector v14 = PVector.sub(c4, c1);
 
-    float cos1=Math.abs(v21.dot(v32) / (v21.mag() * v32.mag()));
-    float cos2=Math.abs(v32.dot(v43) / (v32.mag() * v43.mag()));
-    float cos3=Math.abs(v43.dot(v14) / (v43.mag() * v14.mag()));
-    float cos4=Math.abs(v14.dot(v21) / (v14.mag() * v21.mag()));
+    float cos1 = Math.abs(v21.dot(v32) / (v21.mag() * v32.mag()));
+    float cos2 = Math.abs(v32.dot(v43) / (v32.mag() * v43.mag()));
+    float cos3 = Math.abs(v43.dot(v14) / (v43.mag() * v14.mag()));
+    float cos4 = Math.abs(v14.dot(v21) / (v14.mag() * v21.mag()));
 
     if (cos1 < min_cos && cos2 < min_cos && cos3 < min_cos && cos4 < min_cos)
       return true;
@@ -290,7 +291,7 @@ class QuadGraph {
     PVector a = quad.get(0);
     PVector b = quad.get(2);
 
-    PVector center = new PVector((a.x+b.x)/2, (a.y+b.y)/2);
+    PVector center = new PVector((a.x + b.x) / 2, (a.y + b.y) / 2);
 
     Collections.sort(quad, new CWComparator(center));
 
@@ -309,5 +310,21 @@ class QuadGraph {
 
 
     return quad;
+  }
+}
+
+class CWComparator implements Comparator<PVector> {
+
+  PVector center;
+
+  public CWComparator(PVector center) {
+    this.center = center;
+  }
+
+  @Override
+    public int compare(PVector b, PVector d) {
+    if (Math.atan2(b.y - center.y, b.x - center.x) < Math.atan2(d.y - center.y, d.x - center.x))      
+      return -1; 
+    else return 1;
   }
 }

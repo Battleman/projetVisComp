@@ -46,7 +46,7 @@ class LineDetection {
     List<PVector> lines = new ArrayList<PVector>();
     List<PVector> vertices = new ArrayList<PVector>();
     hough(sobel, 6, linesImg, lines, vertices); 
-    
+    //println(vertices.size());
     if (vertices.size() > 0) {
       position = transformer.get3DRotations(vertices);
       return true;
@@ -303,6 +303,8 @@ class LineDetection {
       
       vertices = getIntersections(newVectors, linesImg);
     }
+    
+    println(vertices.size());
     return houghImg;
   }
   
