@@ -1,3 +1,5 @@
+import processing.video.*;
+
 //Board tilt properties
 final float minAngle = -PI / 3;
 final float maxAngle = PI / 3;
@@ -116,8 +118,9 @@ HUDTopDown hudTD;
 HUDScore hudScore;
 HUDChart hudChart;
 HUDLineImage hudLineImage;
-Capture cam;
+Capture cam1;
 LineDetection lineDetec;
+Movie cam;
 
 void settings() {
   size(winW, winH, P3D);
@@ -156,7 +159,7 @@ void setup () {
   hudLineImage = new HUDLineImage(lineDetec, lineW, hudElemH);
   hud.addAsset(hudLineImage, lineX, hudPadding);
   
-  String[] cameras = Capture.list();
+  /*String[] cameras = Capture.list();
   
   if (cameras.length == 0) {
     println("There are no cameras available for capture.");
@@ -166,10 +169,11 @@ void setup () {
     println("Available cameras:");
     for (int i = 0; i < cameras.length; i++) {
       println(cameras[i]);
-    }
-    cam = new Capture(this, cameras[4]);
-    cam.start();
-  }
+    }*/
+    cam = new Movie(this, "testvideo.mp4"); //Put the video in the same directory
+    cam.loop();
+
+  //}
 }
 
 void draw() {
