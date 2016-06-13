@@ -170,7 +170,14 @@ void draw() {
   background(255, 255, 255);
   axes.dessine();
   cam.read();
+  boolean tmp = cam.available();
+  //println(tmp);
+  //boolean tmp2 = lineDetec.drawLineDetec(cam.get(), position);
   if (cam.available() && lineDetec.drawLineDetec(cam.get(), position)) {
+    if(true) {
+      println(position.toString());
+      println(position.x + " MACHIN " + position.z);
+    }
     rotateX(position.x);
     rotateZ(position.z);
   }

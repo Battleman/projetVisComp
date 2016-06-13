@@ -7,6 +7,7 @@ class LineDetection {
   PImage result, gauss, sobel, linesFinal, bw;
   PGraphics linesImg;
   TwoDThreeD transformer;
+  List<PVector> vertices = new ArrayList<PVector>();
   int finalW = 400, finalH = 300;
   int[][] kernel = {{9, 12, 9},
                   {12, 15, 12},
@@ -44,11 +45,11 @@ class LineDetection {
     
     linesImg = createGraphics(img.width, img.height, P2D);
     List<PVector> lines = new ArrayList<PVector>();
-    List<PVector> vertices = new ArrayList<PVector>();
-    hough(sobel, 6, linesImg, lines, vertices); 
-    //println(vertices.size());
+    int sizes = 0;
+    hough(sobel, 6, linesImg, lines, sizes); 
     if (vertices.size() > 0) {
       position = transformer.get3DRotations(vertices);
+      println("Taille vertices : "+ vertices.size());
       return true;
     }
     else return false;
@@ -136,7 +137,7 @@ class LineDetection {
     return result;
   }
   
-  PImage hough(PImage edgeImg, int nLines, PGraphics linesImg, List<PVector> vectors, List<PVector> vertices) {
+  PImage hough(PImage edgeImg, int nLines, PGraphics linesImg, List<PVector> vectors, int sizes) {
     List<Integer> bestCandidates = new ArrayList<Integer>();
     
     float discretizationStepsPhi = 0.06f;
@@ -302,9 +303,8 @@ class LineDetection {
       linesImg.endDraw();
       
       vertices = getIntersections(newVectors, linesImg);
+      sizes = vertices.size();
     }
-    
-    println(vertices.size());
     return houghImg;
   }
   
