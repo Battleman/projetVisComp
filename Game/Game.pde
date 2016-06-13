@@ -186,8 +186,8 @@ void draw() {
       println(position.toString());
       println(position.x + " MACHIN " + position.z);
     }
-    rotateX(position.x);
-    rotateZ(position.z);
+    rx = intervalTest(position.x, minAngle, maxAngle);
+    rz = intervalTest(position.z, minAngle, maxAngle);
   }
   rotateX(-rx);
   rotateZ(rz);
@@ -207,6 +207,8 @@ void draw() {
   
   hud.dessine();
 }
+
+void rotatePlate()
 
 void mouseDragged() {
   if (!placeMode && !hud.mouseOver()) {
