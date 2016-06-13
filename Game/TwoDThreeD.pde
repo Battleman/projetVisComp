@@ -7,7 +7,7 @@ LineDetection corners;
 
 class TwoDThreeD {
   
-  publicTwoDThreeD(){}
+  TwoDThreeD(){}
   
   // default focal length, well suited for most webcams
   float f = 700;

@@ -109,6 +109,7 @@ HUD hud;
 HUDTopDown hudTD;
 HUDScore hudScore;
 HUDChart hudChart;
+Capture cam;
 LineDetection lineDetec;
 
 void settings() {
@@ -141,8 +142,23 @@ void setup () {
   //Setup score chart
   hudChart = new HUDChart(chartW, hudElemH, 20, hudPadding, 2, 200, 20, mover, chartBackColor, chartSideColor, chartTextColor);
   hud.addAsset(hudChart, chartX, hudPadding);
+  
+  String[] cameras = Capture.list();
+  
+  if (cameras.length == 0) {
+    println("There are no cameras available for capture.");
+    exit();
+  }
+  else {
+    println("Available cameras:");
+    for (int i = 0; i < cameras.length; i++) {
+      println(cameras[i]);
+    }
+    cam = new Capture(this, cameras[0]);
+    cam.start();
+  }
 
-  lineDetec = new LineDetection();
+  lineDetec = new LineDetection(cam);
 }
 
 void draw() {
@@ -283,4 +299,36 @@ String correctScore(PGraphics graph, int i, int maxWidth) {
     return Double.toString(power) + 'e' + Integer.toString(temp);
   }
   else return Integer.toString(i);
+}
+
+class CWComparator implements Comparator<PVector> {
+  
+  PVector center;
+  
+  public CWComparator(PVector center) {
+    this.center = center;
+  }
+  
+  @Override
+  public int compare(PVector b, PVector d) {
+    if (Math.atan2(b.y - center.y, b.x - center.x) < Math.atan2(d.y - center.y, d.x - center.x)) return -1;
+    else return 1;
+  }
+}
+
+public static List<PVector> sortCorners(List<PVector> quad) {
+    
+  // Sort corners so that they are ordered clockwise
+  PVector a = quad.get(0);
+  PVector b = quad.get(2);
+  PVector center = new PVector((a.x + b.x) / 2, (a.y + b.y) / 2);
+  
+  Collections.sort(quad, new Game().new  CWComparator(center));
+  
+  // Re-order the corners so that the first one is the closest to the
+  // origin (0,0) of the image.
+  //
+  // You can use Collections.rotate to shift the corners inside the quad.
+  
+  return quad;
 }

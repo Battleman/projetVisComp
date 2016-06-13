@@ -4,21 +4,24 @@ import java.util.List;
 import java.util.Random;
 
 class LineDetection {
-  PImage img, result, gauss, sobel, hough, linesFinal, bw;
+  PImage img, result, gauss, sobel, linesFinal, bw;
   PGraphics linesImg;
   TwoDThreeD transformer;
   int finalW = 400, finalH = 300;
+  Capture cam;
   
-  LineDetection(){
+  LineDetection(Capture cam) {
     transformer = new TwoDThreeD();
+    this.cam = cam;
   }
   
   PVector drawLineDetec() {
+    cam.read();
     int[][] kernel = {{9, 12, 9},
                       {12, 15, 12},
                       {9, 12, 9}};
     
-    img = loadImage("board1.jpg");
+    img = cam.get();
     result = createImage(img.width, img.height, RGB);
     
     for(int i = 0; i < img.width * img.height; i++) {
@@ -42,14 +45,14 @@ class LineDetection {
         bw.pixels[i] = color(0);
     }
     
+    println(img.width + " " + img.height);
+    
     sobel = sobel(bw);
     
     linesImg = createGraphics(img.width, img.height, P2D);
     List<PVector> lines = new ArrayList<PVector>();
     List<PVector> vertices = new ArrayList<PVector>();
-    hough = hough(sobel, 6, linesImg, lines, vertices);  
-    
-    linesFinal = linesImg.get();
+    hough(sobel, 6, linesImg, lines, vertices); 
     
     return transformer.get3DRotations(vertices);
   }
