@@ -4,24 +4,19 @@ import java.util.List;
 import java.util.Random;
 
 class LineDetection {
-  PImage img, result, gauss, sobel, linesFinal, bw;
+  PImage result, gauss, sobel, linesFinal, bw;
   PGraphics linesImg;
   TwoDThreeD transformer;
   int finalW = 400, finalH = 300;
-  Capture cam;
+  int[][] kernel = {{9, 12, 9},
+                  {12, 15, 12},
+                  {9, 12, 9}};
   
-  LineDetection(Capture cam) {
+  LineDetection() {
     transformer = new TwoDThreeD();
-    this.cam = cam;
   }
   
-  PVector drawLineDetec() {
-    cam.read();
-    int[][] kernel = {{9, 12, 9},
-                      {12, 15, 12},
-                      {9, 12, 9}};
-    
-    img = cam.get();
+  Boolean drawLineDetec(PImage img, PVector position) {
     result = createImage(img.width, img.height, RGB);
     
     for(int i = 0; i < img.width * img.height; i++) {
@@ -45,8 +40,6 @@ class LineDetection {
         bw.pixels[i] = color(0);
     }
     
-    println(img.width + " " + img.height);
-    
     sobel = sobel(bw);
     
     linesImg = createGraphics(img.width, img.height, P2D);
@@ -54,7 +47,11 @@ class LineDetection {
     List<PVector> vertices = new ArrayList<PVector>();
     hough(sobel, 6, linesImg, lines, vertices); 
     
-    return transformer.get3DRotations(vertices);
+    if (vertices.size() > 0) {
+      position = transformer.get3DRotations(vertices);
+      return true;
+    }
+    else return false;
   }
   
   PImage convolute(PImage img, int[][] kernel) {
@@ -229,80 +226,83 @@ class LineDetection {
     }
     
     QuadGraph graph = new QuadGraph();
-    graph.build(vectors, img.width, img.height);
+    graph.build(vectors,result.width, result.height);
     List<int[]> quads = graph.findCycles();
     
-    float area, maxArea = 0;
-    int[] qTemp = quads.get(0);
-      
+    if (quads.size() > 0) {
     
-    for (int i = 0; i < quads.size(); i++) {
-      int[] q = quads.get(i);
+      float area, maxArea = 0;
+      int[] qTemp = quads.get(0);
+        
       
-      PVector v1 = vectors.get(q[0]);
-      PVector v2 = vectors.get(q[1]);
-      PVector v3 = vectors.get(q[2]);
-      PVector v4 = vectors.get(q[3]);
-      
-      PVector c12 = intersection(v1, v2);
-      PVector c23 = intersection(v2, v3);
-      PVector c34 = intersection(v3, v4);
-      PVector c41 = intersection(v4, v1);
-      
-      if (graph.isConvex(c12, c23, c34, c41)
-          && graph.nonFlatQuad(c12, c23, c34, c41)
-          && graph.validArea(c12, c23, c34, c41, img.height * img.height, img.height * img.height / 50)) {
-        area = area(c12, c23, c34, c41);
-      
-        if (area > maxArea) {
-          maxArea = area;
-          qTemp = q;
+      for (int i = 0; i < quads.size(); i++) {
+        int[] q = quads.get(i);
+        
+        PVector v1 = vectors.get(q[0]);
+        PVector v2 = vectors.get(q[1]);
+        PVector v3 = vectors.get(q[2]);
+        PVector v4 = vectors.get(q[3]);
+        
+        PVector c12 = intersection(v1, v2);
+        PVector c23 = intersection(v2, v3);
+        PVector c34 = intersection(v3, v4);
+        PVector c41 = intersection(v4, v1);
+        
+        if (graph.isConvex(c12, c23, c34, c41)
+            && graph.nonFlatQuad(c12, c23, c34, c41)
+            && graph.validArea(c12, c23, c34, c41, result.height * result.height, result.height * result.height / 50)) {
+          area = area(c12, c23, c34, c41);
+        
+          if (area > maxArea) {
+            maxArea = area;
+            qTemp = q;
+          }
         }
       }
-    }
+      
+      List<PVector> newVectors = new ArrayList<PVector>();
+      linesImg.beginDraw();
+      
+      for (int i = 0; i < 4; i++) {
+        PVector line = vectors.get(qTemp[i]);
+        newVectors.add(vectors.get(qTemp[i]));
+        float r = line.x;
+        float phi = line.y;
+      
+        int x0 = 0;
+        int y0 = (int) (r / sin(phi));
+        int x1 = (int) (r / cos(phi));
+        int y1 = 0;
+        int x2 = edgeImg.width;
+        int y2 = (int) (-cos(phi) / sin(phi) * x2 + r / sin(phi));
+        int y3 = edgeImg.width;
+        int x3 = (int) (-(y3 - r / sin(phi)) * (sin(phi) / cos(phi)));
     
-    List<PVector> newVectors = new ArrayList<PVector>();
-    linesImg.beginDraw();
-    
-    for (int i = 0; i < 4; i++) {
-      PVector line = vectors.get(qTemp[i]);
-      newVectors.add(vectors.get(qTemp[i]));
-      float r = line.x;
-      float phi = line.y;
-    
-      int x0 = 0;
-      int y0 = (int) (r / sin(phi));
-      int x1 = (int) (r / cos(phi));
-      int y1 = 0;
-      int x2 = edgeImg.width;
-      int y2 = (int) (-cos(phi) / sin(phi) * x2 + r / sin(phi));
-      int y3 = edgeImg.width;
-      int x3 = (int) (-(y3 - r / sin(phi)) * (sin(phi) / cos(phi)));
-  
-      linesImg.stroke(204, 102, 0);
-      if (y0 > 0) {
-        if (x1 > 0)
-          linesImg.line(x0, y0, x1, y1);
-        else if (y2 > 0)
-          linesImg.line(x0, y0, x2, y2);
-        else
-          linesImg.line(x0, y0, x3, y3);
-      }
-      else {
-        if (x1 > 0) {
-          if (y2 > 0)
-            linesImg.line(x1, y1, x2, y2);
+        linesImg.stroke(204, 102, 0);
+        if (y0 > 0) {
+          if (x1 > 0)
+            linesImg.line(x0, y0, x1, y1);
+          else if (y2 > 0)
+            linesImg.line(x0, y0, x2, y2);
           else
-            linesImg.line(x1, y1, x3, y3);
+            linesImg.line(x0, y0, x3, y3);
         }
-        else 
-          linesImg.line(x2, y2, x3, y3);
+        else {
+          if (x1 > 0) {
+            if (y2 > 0)
+              linesImg.line(x1, y1, x2, y2);
+            else
+              linesImg.line(x1, y1, x3, y3);
+          }
+          else 
+            linesImg.line(x2, y2, x3, y3);
+        }
       }
+      
+      linesImg.endDraw();
+      
+      vertices = getIntersections(newVectors, linesImg);
     }
-    
-    linesImg.endDraw();
-    
-    vertices = getIntersections(newVectors, linesImg);
     return houghImg;
   }
   

@@ -158,7 +158,7 @@ void setup () {
     cam.start();
   }
 
-  lineDetec = new LineDetection(cam);
+  lineDetec = new LineDetection();
 }
 
 void draw() {
@@ -169,9 +169,14 @@ void draw() {
   ambientLight(aLightR, aLightG, aLightB);
   background(255, 255, 255);
   axes.dessine();
-  position = lineDetec.drawLineDetec();
-  rotateX(position.x - rx);
-  rotateZ(position.z + rz);
+  cam.read();
+  if (cam.available()) {
+    position = lineDetec.drawLineDetec(cam.get());
+    rotateX(position.x);
+    rotateZ(position.z);
+  }
+  rotateX(-rx);
+  rotateZ(rz);
   plate.dessine();
 
   for (int i = 0; i < vec.size(); i++) {
