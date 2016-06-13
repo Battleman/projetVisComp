@@ -4,15 +4,13 @@ import java.util.List;
 import java.util.Random;
 
 class LineDetection {
+  boolean valid = false;
   PImage result, gauss, sobel, linesFinal, bw;
   PGraphics linesImg;
   TwoDThreeD transformer;
-<<<<<<< HEAD
   List<PVector> vertices = new ArrayList<PVector>();
-  int finalW = 400, finalH = 300;
-=======
+
   int finalW, finalH;
->>>>>>> 4e6ec564c58461bf0acfbb3fd0d484b98e395e36
   int[][] kernel = {{9, 12, 9},
                   {12, 15, 12},
                   {9, 12, 9}};
@@ -23,7 +21,7 @@ class LineDetection {
     this.finalH = finalH;
   }
   
-  Boolean drawLineDetec(PImage img, PVector position) {
+  Boolean drawLineDetec(PImage img) {
     result = createImage(img.width, img.height, RGB);
     
     for(int i = 0; i < img.width * img.height; i++) {
@@ -51,23 +49,24 @@ class LineDetection {
     
     linesImg = createGraphics(img.width, img.height, P2D);
     List<PVector> lines = new ArrayList<PVector>();
-<<<<<<< HEAD
-    int sizes = 0;
-    hough(sobel, 6, linesImg, lines, sizes); 
-=======
-    List<PVector> vertices = new ArrayList<PVector>();
-    hough(sobel, 6, linesImg, lines, vertices);
+
+    hough(sobel, 6, linesImg, lines); 
     
     linesFinal = linesImg.get();
+    linesFinal.resize(finalW, finalH);
     
->>>>>>> 4e6ec564c58461bf0acfbb3fd0d484b98e395e36
     if (vertices.size() > 0) {
       position = transformer.get3DRotations(vertices);
       println("Taille vertices : "+ vertices.size());
-      return true;
+      valid = true;
     }
-    else return false;
-  }
+    else {
+      valid = false;
+    }
+    
+    return valid;
+ }
+ 
   
   PImage convolute(PImage img, int[][] kernel) {
     PImage result = createImage(img.width, img.height, RGB);
@@ -151,7 +150,7 @@ class LineDetection {
     return result;
   }
   
-  PImage hough(PImage edgeImg, int nLines, PGraphics linesImg, List<PVector> vectors, int sizes) {
+  PImage hough(PImage edgeImg, int nLines, PGraphics linesImg, List<PVector> vectors) {
     List<Integer> bestCandidates = new ArrayList<Integer>();
     
     float discretizationStepsPhi = 0.06f;
@@ -317,7 +316,6 @@ class LineDetection {
       linesImg.endDraw();
       
       vertices = getIntersections(newVectors, linesImg);
-      sizes = vertices.size();
     }
     return houghImg;
   }

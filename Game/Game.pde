@@ -77,7 +77,7 @@ final int lineX = winW - lineW - hudPadding;
 final int chartX = scoreX + scoreW + hudPadding;
 
 //Width of score chart
-final int chartW = winW - chartX - lineW - hudPadding;
+final int chartW = winW - chartX - lineW - 2 * hudPadding;
 
 //Properties of the score table
 final int scoreBorder = 2;
@@ -153,7 +153,7 @@ void setup () {
   hud.addAsset(hudChart, chartX, hudPadding);
   
   //Setup line image
-  hudLineImage = new HUDLineImage(lineDetec);
+  hudLineImage = new HUDLineImage(lineDetec, lineW, hudElemH);
   hud.addAsset(hudLineImage, lineX, hudPadding);
   
   String[] cameras = Capture.list();
@@ -184,7 +184,7 @@ void draw() {
   boolean tmp = cam.available();
   //println(tmp);
   //boolean tmp2 = lineDetec.drawLineDetec(cam.get(), position);
-  if (cam.available() && lineDetec.drawLineDetec(cam.get(), position)) {
+  if (cam.available() && lineDetec.drawLineDetec(cam.get())) {
     if(true) {
       println(position.toString());
       println(position.x + " MACHIN " + position.z);
