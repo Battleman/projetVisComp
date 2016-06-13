@@ -181,9 +181,6 @@ void draw() {
   background(255, 255, 255);
   axes.dessine();
   cam.read();
-  boolean tmp = cam.available();
-  //println(tmp);
-  //boolean tmp2 = lineDetec.drawLineDetec(cam.get(), position);
   if (cam.available() && lineDetec.drawLineDetec(cam.get())) {
     if(true) {
       println(position.toString());
