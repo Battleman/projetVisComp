@@ -67,11 +67,17 @@ final int scoreX = tdX + hudElemH + hudPadding;
 //Width of score table
 final int scoreW = 100;
 
+//Width of line image
+final int lineW = hudElemH * 4 / 3;
+
+//Position of line image
+final int lineX = winW - lineW - hudPadding;
+
 //Position of score chart
 final int chartX = scoreX + scoreW + hudPadding;
 
 //Width of score chart
-final int chartW = winW - chartX - hudPadding;
+final int chartW = winW - chartX - lineW - hudPadding;
 
 //Properties of the score table
 final int scoreBorder = 2;
@@ -109,6 +115,7 @@ HUD hud;
 HUDTopDown hudTD;
 HUDScore hudScore;
 HUDChart hudChart;
+HUDLineImage hudLineImage;
 Capture cam;
 LineDetection lineDetec;
 
@@ -118,6 +125,8 @@ void settings() {
 
 void setup () {
   noStroke();
+
+  lineDetec = new LineDetection(lineW, hudElemH);
   
   //Setup mover
   mover = new Mover(gameW, gameH, ballRadius, ballColor);
@@ -143,6 +152,10 @@ void setup () {
   hudChart = new HUDChart(chartW, hudElemH, 20, hudPadding, 2, 200, 20, mover, chartBackColor, chartSideColor, chartTextColor);
   hud.addAsset(hudChart, chartX, hudPadding);
   
+  //Setup line image
+  hudLineImage = new HUDLineImage(lineDetec);
+  hud.addAsset(hudLineImage, lineX, hudPadding);
+  
   String[] cameras = Capture.list();
   
   if (cameras.length == 0) {
@@ -157,8 +170,6 @@ void setup () {
     cam = new Capture(this, cameras[4]);
     cam.start();
   }
-
-  lineDetec = new LineDetection();
 }
 
 void draw() {

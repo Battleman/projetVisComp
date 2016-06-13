@@ -7,14 +7,20 @@ class LineDetection {
   PImage result, gauss, sobel, linesFinal, bw;
   PGraphics linesImg;
   TwoDThreeD transformer;
+<<<<<<< HEAD
   List<PVector> vertices = new ArrayList<PVector>();
   int finalW = 400, finalH = 300;
+=======
+  int finalW, finalH;
+>>>>>>> 4e6ec564c58461bf0acfbb3fd0d484b98e395e36
   int[][] kernel = {{9, 12, 9},
                   {12, 15, 12},
                   {9, 12, 9}};
   
-  LineDetection() {
+  LineDetection(int finalW, int finalH) {
     transformer = new TwoDThreeD();
+    this.finalW = finalW;
+    this.finalH = finalH;
   }
   
   Boolean drawLineDetec(PImage img, PVector position) {
@@ -45,8 +51,16 @@ class LineDetection {
     
     linesImg = createGraphics(img.width, img.height, P2D);
     List<PVector> lines = new ArrayList<PVector>();
+<<<<<<< HEAD
     int sizes = 0;
     hough(sobel, 6, linesImg, lines, sizes); 
+=======
+    List<PVector> vertices = new ArrayList<PVector>();
+    hough(sobel, 6, linesImg, lines, vertices);
+    
+    linesFinal = linesImg.get();
+    
+>>>>>>> 4e6ec564c58461bf0acfbb3fd0d484b98e395e36
     if (vertices.size() > 0) {
       position = transformer.get3DRotations(vertices);
       println("Taille vertices : "+ vertices.size());
