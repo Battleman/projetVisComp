@@ -170,8 +170,7 @@ void draw() {
   background(255, 255, 255);
   axes.dessine();
   cam.read();
-  if (cam.available()) {
-    position = lineDetec.drawLineDetec(cam.get());
+  if (cam.available() && lineDetec.drawLineDetec(cam.get(), position)) {
     rotateX(position.x);
     rotateZ(position.z);
   }
