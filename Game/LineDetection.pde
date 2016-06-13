@@ -7,13 +7,15 @@ class LineDetection {
   PImage result, gauss, sobel, linesFinal, bw;
   PGraphics linesImg;
   TwoDThreeD transformer;
-  int finalW = 400, finalH = 300;
+  int finalW, finalH;
   int[][] kernel = {{9, 12, 9},
                   {12, 15, 12},
                   {9, 12, 9}};
   
-  LineDetection() {
+  LineDetection(int finalW, int finalH) {
     transformer = new TwoDThreeD();
+    this.finalW = finalW;
+    this.finalH = finalH;
   }
   
   Boolean drawLineDetec(PImage img, PVector position) {
@@ -45,7 +47,9 @@ class LineDetection {
     linesImg = createGraphics(img.width, img.height, P2D);
     List<PVector> lines = new ArrayList<PVector>();
     List<PVector> vertices = new ArrayList<PVector>();
-    hough(sobel, 6, linesImg, lines, vertices); 
+    hough(sobel, 6, linesImg, lines, vertices);
+    
+    linesFinal = linesImg.get();
     
     if (vertices.size() > 0) {
       position = transformer.get3DRotations(vertices);
