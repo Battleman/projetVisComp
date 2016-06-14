@@ -23,10 +23,10 @@ class TwoDThreeD {
   
   // the 3D coordinates of the physical board corners, clockwise
   float [][] physicalCorners = {
-              {-128, -128, 0, 1},
-              { 128, -128, 0, 1},
-              { 128,  128, 0, 1},
-              {-128,  128, 0, 1}
+              {-190, -190, 0, 1},
+              { 190, -190, 0, 1},
+              { 190,  190, 0, 1},
+              {-190,  190, 0, 1}
               // Store here the 3D coordinates of the corners of
               // the real Lego board, in homogenous coordinates
               // and clockwise.
@@ -99,44 +99,44 @@ class TwoDThreeD {
     float[][] A = new float[12][9];
       
     for (int i = 0; i < 4; i++) {
-      A[i*3][0] = 0;
-      A[i*3][1] = 0;
-      A[i*3][2] = 0;
+      A[i * 3][0] = 0;
+      A[i * 3][1] = 0;
+      A[i * 3][2] = 0;
       
       // note that we take physicalCorners[0,1,*3*]: we drop the Z
       // coordinate and use the 2D homogenous coordinates of the physical
       // corners
-      A[i*3][3] = -projectedCorners[i][2] * physicalCorners[i][0];
-      A[i*3][4] = -projectedCorners[i][2] * physicalCorners[i][1];
-      A[i*3][5] = -projectedCorners[i][2] * physicalCorners[i][3];
+      A[i * 3][3] = -projectedCorners[i][2] * physicalCorners[i][0];
+      A[i * 3][4] = -projectedCorners[i][2] * physicalCorners[i][1];
+      A[i * 3][5] = -projectedCorners[i][2] * physicalCorners[i][3];
 
-      A[i*3][6] = projectedCorners[i][1] * physicalCorners[i][0];
-      A[i*3][7] = projectedCorners[i][1] * physicalCorners[i][1];
-      A[i*3][8] = projectedCorners[i][1] * physicalCorners[i][3];
+      A[i * 3][6] = projectedCorners[i][1] * physicalCorners[i][0];
+      A[i * 3][7] = projectedCorners[i][1] * physicalCorners[i][1];
+      A[i * 3][8] = projectedCorners[i][1] * physicalCorners[i][3];
 
-      A[i*3+1][0] = projectedCorners[i][2] * physicalCorners[i][0];
-      A[i*3+1][1] = projectedCorners[i][2] * physicalCorners[i][1];
-      A[i*3+1][2] = projectedCorners[i][2] * physicalCorners[i][3];
+      A[i * 3 + 1][0] = projectedCorners[i][2] * physicalCorners[i][0];
+      A[i * 3 + 1][1] = projectedCorners[i][2] * physicalCorners[i][1];
+      A[i * 3 + 1][2] = projectedCorners[i][2] * physicalCorners[i][3];
       
-      A[i*3+1][3] = 0;
-      A[i*3+1][4] = 0;
-      A[i*3+1][5] = 0;
+      A[i * 3 + 1][3] = 0;
+      A[i * 3 + 1][4] = 0;
+      A[i * 3 + 1][5] = 0;
       
-      A[i*3+1][6] = -projectedCorners[i][0] * physicalCorners[i][0];
-      A[i*3+1][7] = -projectedCorners[i][0] * physicalCorners[i][1];
-      A[i*3+1][8] = -projectedCorners[i][0] * physicalCorners[i][3];
+      A[i * 3 + 1][6] = -projectedCorners[i][0] * physicalCorners[i][0];
+      A[i * 3 + 1][7] = -projectedCorners[i][0] * physicalCorners[i][1];
+      A[i * 3 + 1][8] = -projectedCorners[i][0] * physicalCorners[i][3];
 
-      A[i*3+2][0] = -projectedCorners[i][1] * physicalCorners[i][0];
-      A[i*3+2][1] = -projectedCorners[i][1] * physicalCorners[i][1];
-      A[i*3+2][2] = -projectedCorners[i][1] * physicalCorners[i][3];
+      A[i * 3 + 2][0] = -projectedCorners[i][1] * physicalCorners[i][0];
+      A[i * 3 + 2][1] = -projectedCorners[i][1] * physicalCorners[i][1];
+      A[i * 3 + 2][2] = -projectedCorners[i][1] * physicalCorners[i][3];
       
-      A[i*3+2][3] = projectedCorners[i][0] * physicalCorners[i][0];
-      A[i*3+2][4] = projectedCorners[i][0] * physicalCorners[i][1];
-      A[i*3+2][5] = projectedCorners[i][0] * physicalCorners[i][3];
+      A[i * 3 + 2][3] = projectedCorners[i][0] * physicalCorners[i][0];
+      A[i * 3 + 2][4] = projectedCorners[i][0] * physicalCorners[i][1];
+      A[i * 3 + 2][5] = projectedCorners[i][0] * physicalCorners[i][3];
       
-      A[i*3+2][6] = 0;
-      A[i*3+2][7] = 0;
-      A[i*3+2][8] = 0;
+      A[i * 3 + 2][6] = 0;
+      A[i * 3 + 2][7] = 0;
+      A[i * 3 + 2][8] = 0;
     }
 
     SVD svd = new SVD(A);
@@ -147,7 +147,7 @@ class TwoDThreeD {
     
     //E is the last column of V
     for (int i = 0; i < 9; i++) {
-      E[i/3][i%3] = V[i][V.length-1] / V[8][V.length-1];
+      E[i / 3][i % 3] = V[i][V.length - 1] / V[8][V.length - 1];
     }
     
     return E;
@@ -162,7 +162,7 @@ class TwoDThreeD {
     if (mat[1][0] > 0.998) { // singularity at north pole
       rot.z = 0;
       float delta = (float) Math.atan2(mat[0][1], mat[0][2]);
-      rot.y = -(float) Math.PI/2;
+      rot.y = -(float) Math.PI / 2;
       rot.x = -rot.z + delta;
       return rot;
     }
@@ -170,12 +170,12 @@ class TwoDThreeD {
     if (mat[1][0] < -0.998) { // singularity at south pole
       rot.z = 0;
       float delta = (float) Math.atan2(mat[0][1], mat[0][2]);
-      rot.y = (float) Math.PI/2;
+      rot.y = (float) Math.PI / 2;
       rot.x = rot.z + delta;
       return rot;
     }
 
-    rot.y =-(float)Math.asin(mat[2][0]);
+    rot.y = -(float)Math.asin(mat[2][0]);
     rot.x = (float)Math.atan2(mat[2][1] / Math.cos(rot.y), mat[2][2] / Math.cos(rot.y));
     rot.z = (float)Math.atan2(mat[1][0] / Math.cos(rot.y), mat[0][0] / Math.cos(rot.y));
 

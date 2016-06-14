@@ -120,7 +120,8 @@ HUDChart hudChart;
 HUDLineImage hudLineImage;
 Capture cam1;
 LineDetection lineDetec;
-Movie cam;
+//Movie cam;
+PImage cam;
 
 void settings() {
   size(winW, winH, P3D);
@@ -129,9 +130,13 @@ void settings() {
 void setup () {
   noStroke();
   
+  cam = loadImage("board4.jpg");
+  noLoop();
+  /*
   cam = new Movie(this, "testvideo.mp4");
   cam.loop();
   cam.read();
+  */
 
   lineDetec = new LineDetection(cam.width, cam.height);
   
@@ -171,12 +176,14 @@ void draw() {
   directionalLight(dLightR, dLightG, dLightB, 0, 1, 0);
   ambientLight(aLightR, aLightG, aLightB);
   background(255, 255, 255);
-  axes.dessine();
+  axes.dessine();/*
   cam.read();
   if (cam.available() && lineDetec.drawLineDetec(cam.get())) {
     rx = intervalTest(position.x, minAngle, maxAngle);
     rz = intervalTest(position.z, minAngle, maxAngle);
-  }
+  }*/
+  lineDetec.drawLineDetec(cam);
+  println(position.x * 180 / Math.PI + " " + position.y * 180 / Math.PI + " " + position.z * 180 / Math.PI);
   rotateX(-rx);
   rotateZ(rz);
   plate.dessine();
@@ -223,22 +230,22 @@ void keyPressed() {
   
   if (debugMode && key == CODED) {
     switch (keyCode) {
-      case 17: camY+=100;
+      case 17: camY += 100;
       println("Up" + camY);
       break;
-      case 18: camY-=100;
+      case 18: camY -= 100;
       println("Down" + camY);
       break;
-      case 37: camX-=100;
+      case 37: camX -= 100;
       println("Left" + camX);
       break;
-      case 38: camZ-=100;
+      case 38: camZ -= 100;
       println("Front" + camZ);
       break;
-      case 39: camX+=100;
+      case 39: camX += 100;
       println("Right" + camX);
       break;
-      case 40: camZ+=100;
+      case 40: camZ += 100;
       println("Back" + camZ);
       break;
       default:
@@ -257,7 +264,10 @@ void mouseClicked() {
   if (placeMode) {
     float mX = map(mouseX, 0, winW, (gameW - winW) / 2, (gameW + winW) / 2);
     float mY = map(mouseY, 0, winH, (gameH - winH) / 2, (gameH + winH) / 2);
-    if (mX >= radius && mX <= gameW - radius && mY >= radius && mY <= gameH - radius) {
+    if (mX >= radius &&
+        mX <= gameW - radius &&
+        mY >= radius &&
+        mY <= gameH - radius) {
       vec.add(new PVector(mX - gameW / 2, mY - gameH / 2));
     }
   }
