@@ -25,8 +25,10 @@ class LineDetection {
                         
   final float discretizationStepsPhi = 0.06f;
   final float discretizationStepsR = 2.5f;
+  final float inversePhi = 1.f / discretizationStepsPhi;
+  final float inverseR = 1.f / discretizationStepsR;
                         
-  final int phiDim = (int) (Math.PI / discretizationStepsPhi);
+  final int phiDim = (int) (Math.PI * inversePhi);
   final int rMax, rDim, rTempDef;
   final float[] tabSin, tabCos;
   
@@ -34,14 +36,13 @@ class LineDetection {
     transformer = new TwoDThreeD();
     
     rMax = ((camWidth + camHeight) * 2 + 1);
-    rDim = (int) (rMax / discretizationStepsR);
-    rTempDef = (int) (((rMax - 1) >> 1) / discretizationStepsR);
+    rDim = (int) (rMax  * inverseR);
+    rTempDef = (int) (((rMax - 1) >> 1) * inverseR);
     
     tabSin = new float[phiDim];
     tabCos = new float[phiDim];
   
     float ang = 0;
-    float inverseR = 1.f / discretizationStepsR;
   
     for (int accPhi = 0; accPhi < phiDim; ang += discretizationStepsPhi, accPhi++) {
       tabSin[accPhi] = (float) (Math.sin(ang) * inverseR);
@@ -261,7 +262,6 @@ class LineDetection {
     
       float area, maxArea = 0;
       int[] qTemp = quads.get(0);
-        
       
       for (int i = 0; i < quads.size(); i++) {
         int[] q = quads.get(i);
@@ -296,15 +296,18 @@ class LineDetection {
         newVectors.add(vectors.get(qTemp[i]));
         float r = line.x;
         float phi = line.y;
+        
+        float sin = tabSin[(int) (phi * inversePhi)] * discretizationStepsR;
+        float cos = tabCos[(int) (phi * inversePhi)] * discretizationStepsR;
       
         int x0 = 0;
-        int y0 = (int) (r / sin(phi));
-        int x1 = (int) (r / cos(phi));
+        int y0 = (int) (r / sin);
+        int x1 = (int) (r / cos);
         int y1 = 0;
         int x2 = edgeImg.width;
-        int y2 = (int) (-cos(phi) / sin(phi) * x2 + r / sin(phi));
+        int y2 = (int) (-cos / sin * x2 + r / sin);
         int y3 = edgeImg.width;
-        int x3 = (int) (-(y3 - r / sin(phi)) * (sin(phi) / cos(phi)));
+        int x3 = (int) ((r / sin - y3) * (sin / cos));
     
         linesImg.stroke(204, 102, 0);
         if (y0 > 0) {
@@ -349,9 +352,13 @@ class LineDetection {
     double phi2 = line2.y;
     double r1 = line1.x;
     double r2 = line2.x;
-    double d = Math.cos(phi2) * Math.sin(phi1) - Math.cos(phi1) * Math.sin(phi2);
-    int x = (int) ((r2 * Math.sin(phi1) - r1 * Math.sin(phi2)) / d);
-    int y = (int) ((r1 * Math.cos(phi2) - r2 * Math.cos(phi1)) / d);
+    float sin1 = tabSin[(int) (phi1 * inversePhi)] * discretizationStepsR;
+    float sin2 = tabSin[(int) (phi2 * inversePhi)] * discretizationStepsR;
+    float cos1 = tabCos[(int) (phi1 * inversePhi)] * discretizationStepsR;
+    float cos2 = tabCos[(int) (phi2 * inversePhi)] * discretizationStepsR;
+    double d = cos2 * sin1 - cos1 * sin2;
+    int x = (int) ((r2 * sin1 - r1 * sin2) / d);
+    int y = (int) ((r1 * cos2 - r2 * cos1) / d);
     
     return new PVector(x, y);
   }
