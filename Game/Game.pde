@@ -132,8 +132,6 @@ void setup () {
   cam = new Movie(this, "testvideo.mp4");
   cam.loop();
   cam.read();
-  
-  println(cam.width + " " + cam.height);
 
   lineDetec = new LineDetection(cam.width, cam.height);
   
@@ -176,10 +174,6 @@ void draw() {
   axes.dessine();
   cam.read();
   if (cam.available() && lineDetec.drawLineDetec(cam.get())) {
-    if(true) {
-      println(position.toString());
-      println(position.x + " MACHIN " + position.z);
-    }
     rx = intervalTest(position.x, minAngle, maxAngle);
     rz = intervalTest(position.z, minAngle, maxAngle);
   }

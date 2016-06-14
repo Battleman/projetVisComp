@@ -114,7 +114,7 @@ class HUDChart extends HUDAsset {
   }
   
   int getPos(int score) {
-    double factor = 0.95;
+    double factor = .95;
     
     return (int) (((max - score) * factor * chartH / (double) (max - min)) + chartH * (1 - factor) / 2);
   }

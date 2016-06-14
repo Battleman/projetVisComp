@@ -255,7 +255,7 @@ class LineDetection {
     }
     
     QuadGraph graph = new QuadGraph();
-    graph.build(vectors,result.width, result.height);
+    graph.build(vectors, result.width, result.height);
     List<int[]> quads = graph.findCycles();
     
     if (quads.size() > 0) {
@@ -305,9 +305,9 @@ class LineDetection {
         int x1 = (int) (r / cos);
         int y1 = 0;
         int x2 = edgeImg.width;
-        int y2 = (int) (-cos / sin * x2 + r / sin);
+        int y2 = (int) ((r - x2 * cos) / sin);
         int y3 = edgeImg.width;
-        int x3 = (int) ((r / sin - y3) * (sin / cos));
+        int x3 = (int) ((r / sin - y3) * sin / cos);
     
         linesImg.stroke(204, 102, 0);
         if (y0 > 0) {
