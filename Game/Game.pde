@@ -120,8 +120,8 @@ HUDChart hudChart;
 HUDLineImage hudLineImage;
 Capture cam1;
 LineDetection lineDetec;
-//Movie cam;
-PImage cam;
+Movie cam;
+//PImage cam;
 
 void settings() {
   size(winW, winH, P3D);
@@ -130,13 +130,13 @@ void settings() {
 void setup () {
   noStroke();
   
-  cam = loadImage("board1.jpg");
-  noLoop();
-  /*
+  //cam = loadImage("board1.jpg");
+  //noLoop();
+  
   cam = new Movie(this, "testvideo.mp4");
   cam.loop();
   cam.read();
-  */
+  
 
   lineDetec = new LineDetection(cam.width, cam.height);
   
@@ -176,14 +176,14 @@ void draw() {
   directionalLight(dLightR, dLightG, dLightB, 0, 1, 0);
   ambientLight(aLightR, aLightG, aLightB);
   background(255, 255, 255);
-  axes.dessine();/*
+  axes.dessine();
   cam.read();
   if (cam.available() && lineDetec.drawLineDetec(cam.get())) {
-    rx = intervalTest(position.x, minAngle, maxAngle);
+    rx = intervalTest(-position.x, minAngle, maxAngle);
     rz = intervalTest(position.z, minAngle, maxAngle);
-  }*/
-  lineDetec.drawLineDetec(cam);
-  println(position.x * 180 / Math.PI + " " + position.y * 180 / Math.PI + " " + position.z * 180 / Math.PI);
+  }
+  //lineDetec.drawLineDetec(cam);
+  //println(position.x * 180 / Math.PI + " " + position.y * 180 / Math.PI + " " + position.z * 180 / Math.PI);
   rotateX(-rx);
   rotateZ(rz);
   plate.dessine();
@@ -316,36 +316,4 @@ String correctScore(PGraphics graph, int i, int maxWidth) {
     return Double.toString(power) + 'e' + Integer.toString(temp);
   }
   else return Integer.toString(i);
-}
-
-class CWComparator implements Comparator<PVector> {
-  
-  PVector center;
-  
-  public CWComparator(PVector center) {
-    this.center = center;
-  }
-  
-  @Override
-  public int compare(PVector b, PVector d) {
-    if (Math.atan2(b.y - center.y, b.x - center.x) < Math.atan2(d.y - center.y, d.x - center.x)) return -1;
-    else return 1;
-  }
-}
-
-public static List<PVector> sortCorners(List<PVector> quad) {
-    
-  // Sort corners so that they are ordered clockwise
-  PVector a = quad.get(0);
-  PVector b = quad.get(2);
-  PVector center = new PVector((a.x + b.x) / 2, (a.y + b.y) / 2);
-  
-  Collections.sort(quad, new Game().new  CWComparator(center));
-  
-  // Re-order the corners so that the first one is the closest to the
-  // origin (0,0) of the image.
-  //
-  // You can use Collections.rotate to shift the corners inside the quad.
-  
-  return quad;
 }

@@ -75,15 +75,13 @@ class TwoDThreeD {
 
     float[][] projectedCorners = new float[4][3];
     
-    float[][] pointsMat = {
-      {points2D.get(0).x, points2D.get(0).y, 1},
-      {points2D.get(1).x, points2D.get(1).y, 1},
-      {points2D.get(2).x, points2D.get(2).y, 1},
-      {points2D.get(3).x, points2D.get(3).y, 1}
-    };
-                           
-    for (int i = 0; i < 4; i++) {
-      projectedCorners[i] = Mat.multiply(invK, pointsMat[i]);
+    for(int i = 0; i < 4; i++){
+      float[][] matP = {{points2D.get(i).x}, {points2D.get(i).y}, {1}};
+      float[][] result = Mat.multiply(invK, matP);
+      
+      for(int j = 0; j < 3; j++){
+         projectedCorners[i][j] = result[j][0];
+      }
     }
     
     // 'A' contains the cross-product (K^(-1) · p) X P
