@@ -7,21 +7,86 @@ class LineDetection {
   boolean valid = false;
   PImage img, result, gauss, sobel, linesFinal, bw;
   PGraphics linesImg;
-  TwoDThreeD transformer;
   List<PVector> vertices = new ArrayList<PVector>();
-
-  int finalW, finalH;
-  int[][] kernel = {{9, 12, 9},
-                  {12, 15, 12},
-                  {9, 12, 9}};
   
-  LineDetection() {
+  final TwoDThreeD transformer;
+  
+  final int[][] kernel = {{9, 12, 9},
+                          {12, 15, 12},
+                          {9, 12, 9}};
+                  
+  final float b = 1, s = 0, weight;
+  final float[][] hKernel = { {s, b, s},
+                              {0, 0, 0},
+                              {-s, -b, -s}};
+  final float[][] vKernel = { {s, 0, -s},
+                              {b, 0, -b},
+                              {s, 0, -s}};
+                        
+  final float discretizationStepsPhi = 0.06f;
+  final float discretizationStepsR = 2.5f;
+                        
+  final int phiDim = (int) (Math.PI / discretizationStepsPhi);
+  final int rMax, rDim, rTempDef;
+  final float[] tabSin, tabCos;
+  
+  LineDetection(int camWidth, int camHeight) {
     transformer = new TwoDThreeD();
+    
+    rMax = ((camWidth + camHeight) * 2 + 1);
+    rDim = (int) (rMax / discretizationStepsR);
+    rTempDef = (int) (((rMax - 1) >> 1) / discretizationStepsR);
+    
+    tabSin = new float[phiDim];
+    tabCos = new float[phiDim];
+  
+    float ang = 0;
+    float inverseR = 1.f / discretizationStepsR;
+  
+    for (int accPhi = 0; accPhi < phiDim; ang += discretizationStepsPhi, accPhi++) {
+      tabSin[accPhi] = (float) (Math.sin(ang) * inverseR);
+      tabCos[accPhi] = (float) (Math.cos(ang) * inverseR);
+    }
+    
+    int temp = 0;
+    
+    for (int i = 0; i < 3; i++) {
+      for (int j = 0; j < 3; j++) {
+        temp += kernel[i][j];
+      }
+    }
+    
+    weight = temp;
   }
   
   Boolean drawLineDetec(PImage img) {
     this.img = img;
-    result = createImage(img.width, img.height, RGB);
+    
+    result = filterHSB(img);
+    gauss = convolute(result, kernel);
+    bw = filterIntensity(gauss);
+    sobel = sobel(bw);
+    
+    linesImg = createGraphics(img.width, img.height, P2D);
+    List<PVector> lines = new ArrayList<PVector>();
+
+    hough(sobel, 6, linesImg, lines); 
+    
+    linesFinal = linesImg.get();
+    
+    if (vertices.size() > 0) {
+      position = transformer.get3DRotations(vertices);
+      valid = true;
+    }
+    else {
+      valid = false;
+    }
+    
+    return valid;
+  }
+ 
+  PImage filterHSB(PImage img) {
+    PImage result = createImage(img.width, img.height, RGB);
     
     for(int i = 0; i < img.width * img.height; i++) {
       int temp = img.pixels[i];
@@ -34,49 +99,28 @@ class LineDetection {
       }
     }
     
-    gauss = convolute(result, kernel);
-    bw = createImage(img.width, img.height, RGB);
+    return result;
+  }
+  
+  PImage filterIntensity(PImage img) {
+    PImage result = createImage(img.width, img.height, RGB);
+    
     for(int i = 0; i < img.width * img.height; i++) {
-      int temp = gauss.pixels[i];
+      int temp = img.pixels[i];
       if (brightness(temp) > 30)
-        bw.pixels[i] = color(255);
+        result.pixels[i] = color(255);
       else
-        bw.pixels[i] = color(0);
+        result.pixels[i] = color(0);
     }
     
-    sobel = sobel(bw);
-    
-    linesImg = createGraphics(img.width, img.height, P2D);
-    List<PVector> lines = new ArrayList<PVector>();
-
-    hough(sobel, 6, linesImg, lines); 
-    
-    linesFinal = linesImg.get();
-    
-    if (vertices.size() > 0) {
-      position = transformer.get3DRotations(vertices);
-      println("Taille vertices : "+ vertices.size());
-      valid = true;
-    }
-    else {
-      valid = false;
-    }
-    
-    return valid;
- }
- 
+    return result;
+  }
   
   PImage convolute(PImage img, int[][] kernel) {
     PImage result = createImage(img.width, img.height, RGB);
     
-    float weight = 0, temp;
+    float temp;
     int acc;
-    
-    for (int i = 0; i < 3; i++) {
-      for (int j = 0; j < 3; j++) {
-        weight += kernel[i][j];
-      }
-    }
                     
     for (int i = 1; i < img.width - 1; i++) {
       for (int j = 1; j < img.height - 1; j++) {
@@ -96,16 +140,7 @@ class LineDetection {
   
   
   
-  PImage sobel(PImage img) {
-    float b = 1;
-    float s = 0;
-    float[][] hKernel = { {s, b, s},
-                          {0, 0, 0},
-                          {-s, -b, -s}};
-    float[][] vKernel = { {s, 0, -s},
-                          {b, 0, -b},
-                          {s, 0, -s}};
-                          
+  PImage sobel(PImage img) {                          
     PImage result = createImage(img.width, img.height, ALPHA);
     
     for (int i = 0; i < img.width * img.height; i++) {
@@ -151,29 +186,10 @@ class LineDetection {
   PImage hough(PImage edgeImg, int nLines, PGraphics linesImg, List<PVector> vectors) {
     List<Integer> bestCandidates = new ArrayList<Integer>();
     
-    float discretizationStepsPhi = 0.06f;
-    float discretizationStepsR = 2.5f;
-  
-    int phiDim = (int) (Math.PI / discretizationStepsPhi);
-    int rMax = ((edgeImg.width + edgeImg.height) * 2 + 1);
-    int rDim = (int) (rMax / discretizationStepsR);
     int[] accumulator = new int[(phiDim + 2) * (rDim + 2)];
     int rTemp;
-    int rTempDef = (int) (((rMax - 1) >> 1) / discretizationStepsR);
     int minVotes = 200;
     int neighbourhood = 10;
-    
-    // pre-compute the sin and cos values
-    float[] tabSin = new float[phiDim];
-    float[] tabCos = new float[phiDim];
-  
-    float ang = 0;
-    float inverseR = 1.f / discretizationStepsR;
-  
-    for (int accPhi = 0; accPhi < phiDim; ang += discretizationStepsPhi, accPhi++) {
-      tabSin[accPhi] = (float) (Math.sin(ang) * inverseR);
-      tabCos[accPhi] = (float) (Math.cos(ang) * inverseR);
-    }
     
     PImage houghImg = createImage(rDim + 2, phiDim + 2, ALPHA);
   

@@ -128,8 +128,14 @@ void settings() {
 
 void setup () {
   noStroke();
+  
+  cam = new Movie(this, "testvideo.mp4");
+  cam.loop();
+  cam.read();
+  
+  println(cam.width + " " + cam.height);
 
-  lineDetec = new LineDetection();
+  lineDetec = new LineDetection(cam.width, cam.height);
   
   //Setup mover
   mover = new Mover(gameW, gameH, ballRadius, ballColor);
@@ -158,22 +164,6 @@ void setup () {
   //Setup line image
   hudLineImage = new HUDLineImage(lineDetec, lineW, hudElemH);
   hud.addAsset(hudLineImage, lineX, hudPadding);
-  
-  /*String[] cameras = Capture.list();
-  
-  if (cameras.length == 0) {
-    println("There are no cameras available for capture.");
-    exit();
-  }
-  else {
-    println("Available cameras:");
-    for (int i = 0; i < cameras.length; i++) {
-      println(cameras[i]);
-    }*/
-    cam = new Movie(this, "testvideo.mp4"); //Put the video in the same directory
-    cam.loop();
-
-  //}
 }
 
 void draw() {
