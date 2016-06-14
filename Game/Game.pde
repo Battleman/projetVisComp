@@ -179,7 +179,7 @@ void draw() {
   axes.dessine();
   cam.read();
   if (cam.available() && lineDetec.drawLineDetec(cam.get())) {
-    rx = intervalTest(-position.x, minAngle, maxAngle);
+    rx = intervalTest(position.x, minAngle, maxAngle);
     rz = intervalTest(position.z, minAngle, maxAngle);
   }
   //lineDetec.drawLineDetec(cam);

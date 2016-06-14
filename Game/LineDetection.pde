@@ -23,7 +23,7 @@ class LineDetection {
                               {b, 0, -b},
                               {s, 0, -s}};
                         
-  final float discretizationStepsPhi = 0.06f;
+  final float discretizationStepsPhi = 0.0125f;
   final float discretizationStepsR = 2.5f;
   final float inversePhi = 1.f / discretizationStepsPhi;
   final float inverseR = 1.f / discretizationStepsR;
@@ -65,13 +65,13 @@ class LineDetection {
     
     result = filterHSB(img);
     gauss = convolute(result, kernel);
-    bw = filterIntensity(gauss);
-    sobel = sobel(bw);
+    //bw = filterIntensity(gauss);
+    sobel = sobel(gauss);
     
     linesImg = createGraphics(img.width, img.height, P2D);
     List<PVector> lines = new ArrayList<PVector>();
 
-    hough(sobel, 6, linesImg, lines); 
+    hough(sobel, 5, linesImg, lines); 
     
     linesFinal = linesImg.get();
     
@@ -91,8 +91,8 @@ class LineDetection {
     
     for(int i = 0; i < img.width * img.height; i++) {
       int temp = img.pixels[i];
-      if (hue(temp) > 100 && hue(temp) < 140 && brightness(temp) > 30
-          && brightness(temp) < 140 && saturation(temp) > 100) {
+      if (hue(temp) > 110 && hue(temp) < 138 && brightness(temp) > 40
+          && saturation(temp) > 102.5) {
         result.pixels[i] = (int) brightness(temp);
       }
       else {
