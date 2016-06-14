@@ -130,7 +130,7 @@ void settings() {
 void setup () {
   noStroke();
   
-  cam = loadImage("board4.jpg");
+  cam = loadImage("board1.jpg");
   noLoop();
   /*
   cam = new Movie(this, "testvideo.mp4");

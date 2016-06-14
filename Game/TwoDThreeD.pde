@@ -23,20 +23,17 @@ class TwoDThreeD {
   
   // the 3D coordinates of the physical board corners, clockwise
   float [][] physicalCorners = {
-              {-190, -190, 0, 1},
-              { 190, -190, 0, 1},
-              { 190,  190, 0, 1},
-              {-190,  190, 0, 1}
-              // Store here the 3D coordinates of the corners of
-              // the real Lego board, in homogenous coordinates
-              // and clockwise.
-              };
+    {-boardSize / 2, -boardSize / 2, 0, 1},
+    { boardSize / 2, -boardSize / 2, 0, 1},
+    { boardSize / 2,  boardSize / 2, 0, 1},
+    {-boardSize / 2,  boardSize / 2, 0, 1}
+  };
   
   public TwoDThreeD(int width, int height) {
     
     // set the offset to the center of the webcam image
-    K[0][2] = 0.5f * width;
-    K[1][2] = 0.5f * height;
+    K[0][2] = .5f * width;
+    K[1][2] = .5f * height;
       
   }
 
@@ -73,23 +70,17 @@ class TwoDThreeD {
   }
     
   double[][] solveExtrinsicMatrix(List<PVector> points2D) {
-  
-    // p ~= K · [R|t] · P
-    // with P the (3D) corners of the physical board, p the (2D) 
-    // projected points onto the webcam image, K the intrinsic 
-    // matrix and R and t the rotation and translation we want to 
-    // compute.
-    //
-    // => We want to solve: (K^(-1) · p) X ([R|t] · P) = 0
-    
+     
     float[][] invK = Mat.inverse(K);
 
     float[][] projectedCorners = new float[4][3];
     
-    float[][] pointsMat = {{points2D.get(1).x, points2D.get(1).y, 1},
-                           {points2D.get(2).x, points2D.get(2).y, 1},
-                           {points2D.get(3).x, points2D.get(3).y, 1},
-                           {points2D.get(4).x, points2D.get(4).y, 1}};
+    float[][] pointsMat = {
+      {points2D.get(0).x, points2D.get(0).y, 1},
+      {points2D.get(1).x, points2D.get(1).y, 1},
+      {points2D.get(2).x, points2D.get(2).y, 1},
+      {points2D.get(3).x, points2D.get(3).y, 1}
+    };
                            
     for (int i = 0; i < 4; i++) {
       projectedCorners[i] = Mat.multiply(invK, pointsMat[i]);
@@ -140,34 +131,30 @@ class TwoDThreeD {
     }
 
     SVD svd = new SVD(A);
-    
     double[][] V = svd.getV();
-    
     double[][] E = new double[3][3];
     
     //E is the last column of V
-    for (int i = 0; i < 9; i++) {
+    for (int i = 0; i < 9; i++)
       E[i / 3][i % 3] = V[i][V.length - 1] / V[8][V.length - 1];
-    }
     
     return E;
-
   }
     
-  PVector rotationFromMatrix(float[][]  mat) {
+  PVector rotationFromMatrix(float[][] mat) {
 
     // Assuming rotation order is around x,y,z
     PVector rot = new PVector();
     
-    if (mat[1][0] > 0.998) { // singularity at north pole
+    if (mat[1][0] > .998) { // singularity at north pole
       rot.z = 0;
       float delta = (float) Math.atan2(mat[0][1], mat[0][2]);
-      rot.y = -(float) Math.PI / 2;
+      rot.y = (float) -Math.PI / 2;
       rot.x = -rot.z + delta;
       return rot;
     }
 
-    if (mat[1][0] < -0.998) { // singularity at south pole
+    if (mat[1][0] < -.998) { // singularity at south pole
       rot.z = 0;
       float delta = (float) Math.atan2(mat[0][1], mat[0][2]);
       rot.y = (float) Math.PI / 2;
@@ -175,9 +162,9 @@ class TwoDThreeD {
       return rot;
     }
 
-    rot.y = -(float)Math.asin(mat[2][0]);
-    rot.x = (float)Math.atan2(mat[2][1] / Math.cos(rot.y), mat[2][2] / Math.cos(rot.y));
-    rot.z = (float)Math.atan2(mat[1][0] / Math.cos(rot.y), mat[0][0] / Math.cos(rot.y));
+    rot.y = (float) -Math.asin(mat[2][0]);
+    rot.x = (float) Math.atan2(mat[2][1] / Math.cos(rot.y), mat[2][2] / Math.cos(rot.y));
+    rot.z = (float) Math.atan2(mat[1][0] / Math.cos(rot.y), mat[0][0] / Math.cos(rot.y));
 
     return rot;
   }
