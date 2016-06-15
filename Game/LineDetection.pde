@@ -65,8 +65,8 @@ class LineDetection {
     
     result = filterHSB(img);
     gauss = convolute(result, kernel);
-    //bw = filterIntensity(gauss);
-    sobel = sobel(gauss);
+    bw = filterIntensity(gauss);
+    sobel = sobel(bw);
     
     linesImg = createGraphics(img.width, img.height, P2D);
     List<PVector> lines = new ArrayList<PVector>();
@@ -91,8 +91,8 @@ class LineDetection {
     
     for(int i = 0; i < img.width * img.height; i++) {
       int temp = img.pixels[i];
-      if (hue(temp) > 110 && hue(temp) < 138 && brightness(temp) > 40
-          && saturation(temp) > 102.5) {
+      if (hue(temp) > 50 && hue(temp) < 130 && brightness(temp) > 5
+          && brightness(temp) < 180 && saturation(temp) > 102.5) {
         result.pixels[i] = (int) brightness(temp);
       }
       else {
