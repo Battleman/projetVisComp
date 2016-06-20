@@ -27,7 +27,7 @@ float rx = 0;
 float rz = 0;
 float boardFactor = 1;
 List<PVector> vec = new ArrayList<PVector>();
-PVector position;
+PVector position = new PVector(0, 0, 0);
 
 //Debug axes properties
 final int axeDist = 15;
@@ -179,8 +179,8 @@ void draw() {
   axes.dessine();
   cam.read();
   if (cam.available() && lineDetec.drawLineDetec(cam.get())) {
-    rx = intervalTest(position.x, minAngle, maxAngle);
-    rz = intervalTest(position.z, minAngle, maxAngle);
+    rx = intervalTest(-position.x, minAngle, maxAngle);
+    rz = intervalTest(-position.y, minAngle, maxAngle);
   }
   //lineDetec.drawLineDetec(cam);
   //println(position.x * 180 / Math.PI + " " + position.y * 180 / Math.PI + " " + position.z * 180 / Math.PI);

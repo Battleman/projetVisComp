@@ -3,8 +3,6 @@ import java.util.List;
 import processing.core.PVector;
 import papaya.*;
 
-LineDetection corners;
-
 class TwoDThreeD {
   
   TwoDThreeD(){}

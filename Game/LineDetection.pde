@@ -23,7 +23,7 @@ class LineDetection {
                               {b, 0, -b},
                               {s, 0, -s}};
                         
-  final float discretizationStepsPhi = 0.0125f;
+  final float discretizationStepsPhi = 0.06f;
   final float discretizationStepsR = 2.5f;
   final float inversePhi = 1.f / discretizationStepsPhi;
   final float inverseR = 1.f / discretizationStepsR;
@@ -139,8 +139,6 @@ class LineDetection {
     return result;
   }
   
-  
-  
   PImage sobel(PImage img) {                          
     PImage result = createImage(img.width, img.height, ALPHA);
     
@@ -189,8 +187,8 @@ class LineDetection {
     
     int[] accumulator = new int[(phiDim + 2) * (rDim + 2)];
     int rTemp;
-    int minVotes = 200;
-    int neighbourhood = 10;
+    int minVotes = 130;
+    int neighbourhood = 12;
     
     PImage houghImg = createImage(rDim + 2, phiDim + 2, ALPHA);
   
@@ -288,12 +286,12 @@ class LineDetection {
         }
       }
       
-      List<PVector> newVectors = new ArrayList<PVector>();
+      vertices = new ArrayList<PVector>();
       linesImg.beginDraw();
       
       for (int i = 0; i < 4; i++) {
         PVector line = vectors.get(qTemp[i]);
-        newVectors.add(vectors.get(qTemp[i]));
+        vertices.add(line);
         float r = line.x;
         float phi = line.y;
         
@@ -332,7 +330,8 @@ class LineDetection {
       
       linesImg.endDraw();
       
-      vertices = getIntersections(newVectors, linesImg);
+      getIntersections(vertices, linesImg);
+      graph.sortCorners(vertices);
     }
     return houghImg;
   }
